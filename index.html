@@ -1292,9 +1292,15 @@
 
         function cerrarPinScreen() {
             document.getElementById('pin-screen').classList.remove('show');
-            aplicarVendedorSesion();
-            // Recargar selects con datos frescos y luego aplicar sesión
-            cargarSelects().then(() => aplicarVendedorSesion());
+            // Esperar a que los selects estén listos antes de aplicar sesión
+            cargarSelects().then(() => {
+                aplicarVendedorSesion();
+                // Asegurar que todos los campos del formulario estén habilitados
+                ['contacto-nombre','contacto-puesto','objetivo','tipo-visita','estado-cliente'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.disabled = false;
+                });
+            });
         }
 
         function aplicarVendedorSesion() {
@@ -1711,6 +1717,11 @@
                     });
                     sc.disabled = false;
                 }
+                // Asegurar que los demás campos estén habilitados
+                ['contacto-nombre','contacto-puesto','objetivo','tipo-visita','estado-cliente'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.disabled = false;
+                });
             } catch(e) {
                 sc.innerHTML = '<option value="">Error al cargar clientes</option>';
                 console.error('Error clientes:', e.message);
