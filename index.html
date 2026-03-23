@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Visitas Comerciales</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlZpc2l0YXMgQ29tZXJjaWFsZXMiLCAic2hvcnRfbmFtZSI6ICJWaXNpdGFzIiwgImRlc2NyaXB0aW9uIjogIlJlZ2lzdHJvIHkgc2VndWltaWVudG8gZGUgdmlzaXRhcyBhIGNsaWVudGVzIiwgInN0YXJ0X3VybCI6ICIvIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZDExMTciLCAidGhlbWVfY29sb3IiOiAiIzBkMTExNyIsICJpY29ucyI6IFt7InNyYyI6ICJodHRwczovL3ZpYS5wbGFjZWhvbGRlci5jb20vMTkyLzNiODJmNi9mZmZmZmY/dGV4dD1WIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifSwgeyJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzUxMi8zYjgyZjYvZmZmZmZmP3RleHQ9ViIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==">
+    <meta name="theme-color" content="#0d1117">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Visitas">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1c2430;
+            --border: #2a3441;
+            --accent: #3b82f6;
+            --accent2: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #e6edf3;
+            --text-muted: #7d8590;
+            --text-dim: #4a5568;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            position: relative;
+            padding: 40px 40px 32px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -60px; left: -60px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; right: 10%;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .header-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(90deg, var(--text), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* NAV TABS */
+        .nav-tabs {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 40px;
+        }
+        .nav-tabs-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            gap: 4px;
+        }
+        .tab-btn {
+            padding: 14px 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Sora', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* MAIN */
+        .main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        /* Formularios y KPI siguen centrados en 960px */
+        #tab-iniciar, #tab-cerrar, #tab-kpi {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* Consultas más ancha para acomodar la tabla de visitas */
+        #tab-consultas .result-table {
+            min-width: 900px;
+        }
+
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* SECTION HEADER */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 3px; height: 18px;
+            background: linear-gradient(to bottom, var(--accent), var(--accent2));
+            border-radius: 2px;
+        }
+
+        /* CARD */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        /* FORM */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 7px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Sora', sans-serif;
+            font-size: 0.875rem;
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .form-group input[readonly] {
+            color: var(--text-muted);
+            cursor: default;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        select option { background: #1c2430; }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: 'Sora', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(59,130,246,0.35); }
+
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: #222d3d; border-color: var(--accent); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+
+        .btn-danger { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+        .btn-danger.recording { background: var(--danger); color: white; animation: pulse 1.4s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 6px transparent} }
+
+        .btn-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* LOCATION ROW */
+        .input-with-btn {
+            display: flex;
+            gap: 8px;
+        }
+        .input-with-btn input { flex: 1; }
+
+        /* SUCCESS MESSAGE */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(16,185,129,0.4);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            z-index: 999;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* GRID VISITAS - scroll bidireccional en su lugar */
+        .visitas-scroll-wrap {
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            max-height: calc(100vh - 260px);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .visitas-scroll-wrap table {
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            width: max-content;
+            min-width: 100%;
+        }
+        .visitas-scroll-wrap thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--surface2);
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            border-bottom: 2px solid var(--border);
+            border-right: 1px solid var(--border);
+        }
+        .visitas-scroll-wrap thead th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: var(--surface2);
+        }
+        .visitas-scroll-wrap tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid rgba(42,52,65,0.5);
+            color: var(--text);
+            vertical-align: middle;
+        }
+        .visitas-scroll-wrap tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background: var(--surface);
+            font-weight: 600;
+            border-right: 2px solid var(--border);
+        }
+        .visitas-scroll-wrap tbody tr:last-child td { border-bottom: none; }
+        .visitas-scroll-wrap tbody tr:hover td { background: rgba(59,130,246,0.06); }
+        .visitas-scroll-wrap tbody tr:hover td:first-child { background: rgba(59,130,246,0.1); }
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        /* TABLES */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .result-table thead tr {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+        .result-table th {
+            padding: 11px 16px;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+        }
+        .result-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+        .result-table tr:last-child td { border-bottom: none; }
+        .result-table tbody tr:hover { background: rgba(59,130,246,0.04); }
+
+        /* KPI CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-mini {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .kpi-mini-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 8px;
+        }
+        .kpi-mini-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 1.7rem;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1;
+        }
+        .kpi-mini-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar-wrap {
+            margin-top: 6px;
+        }
+        .progress-bar-bg {
+            height: 5px;
+            background: var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* BADGE */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 9px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: 'DM Mono', monospace;
+        }
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--warning); }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .empty-state p { font-size: 0.85rem; }
+
+
+        /* CRUD INLINE */
+        .crud-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            border-radius: 10px 10px 0 0;
+        }
+        .crud-toolbar-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+        .crud-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+        .result-table td.editable { cursor: pointer; position: relative; }
+        .result-table td.editable:hover { background: rgba(59,130,246,0.07); }
+        .result-table td input.cell-input {
+            background: var(--surface2);
+            border: 1px solid var(--accent);
+            border-radius: 5px;
+            color: var(--text);
+            font-family: 'Sora', sans-serif;
+            font-size: 0.82rem;
+            padding: 4px 8px;
+            width: 100%;
+            outline: none;
+        }
+        .row-actions { display: flex; gap: 6px; white-space: nowrap; }
+        .btn-icon {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: 'Sora', sans-serif;
+            transition: all 0.15s;
+        }
+        .btn-icon-save { background: rgba(16,185,129,0.15); color: var(--success); }
+        .btn-icon-save:hover { background: var(--success); color: white; }
+        .btn-icon-del { background: rgba(239,68,68,0.12); color: var(--danger); }
+        .btn-icon-del:hover { background: var(--danger); color: white; }
+        .btn-icon-edit { background: rgba(59,130,246,0.12); color: var(--accent); }
+        .btn-icon-edit:hover { background: var(--accent); color: white; }
+        .new-row-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(59,130,246,0.05);
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        .new-row-form input, .new-row-form select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            color: var(--text);
+            font-family: 'Sora', sans-serif;
+            font-size: 0.82rem;
+            padding: 7px 12px;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            transition: border-color 0.2s;
+        }
+        .new-row-form input:focus, .new-row-form select:focus { border-color: var(--accent); }
+        .new-row-form select option { background: #1c2430; }
+
+        /* ── MOBILE FIRST ─────────────────────────────────────── */
+
+        /* Bottom nav bar for mobile */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            z-index: 200;
+            padding: 6px 0 env(safe-area-inset-bottom, 6px);
+        }
+        .bottom-nav-inner {
+            display: flex;
+            justify-content: space-around;
+        }
+        .bottom-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 8px 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Sora', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .bottom-tab .tab-icon { font-size: 1.3rem; line-height: 1; }
+        .bottom-tab.active { color: var(--accent); }
+        .bottom-tab.active .tab-icon { filter: drop-shadow(0 0 6px var(--accent)); }
+
+        @media (max-width: 640px) {
+            /* Header compacto */
+            .header { padding: 16px; }
+            .header-inner { gap: 12px; }
+            .header-icon { width: 38px; height: 38px; font-size: 18px; border-radius: 10px; }
+            .header h1 { font-size: 1.15rem; }
+            .header p { font-size: 0.72rem; }
+
+            /* Ocultar nav de escritorio, mostrar bottom nav */
+            .nav-tabs { display: none; }
+            .bottom-nav { display: block; }
+
+            /* Main con padding inferior para bottom nav */
+            .main { padding: 16px 14px 90px; }
+
+            /* Formulario una sola columna */
+            .form-grid { grid-template-columns: 1fr; gap: 14px; }
+            .form-group.full { grid-column: 1; }
+
+            /* Ubicación: botón debajo del input */
+            .input-with-btn { flex-direction: column; gap: 8px; }
+            .input-with-btn input { width: 100%; }
+            .input-with-btn .btn { width: 100%; justify-content: center; }
+
+            /* Botones más grandes para dedos */
+            .btn { padding: 13px 18px; font-size: 0.88rem; }
+            .btn-primary { width: 100%; justify-content: center; font-size: 0.95rem; padding: 15px; }
+
+            /* Acciones del form */
+            .btn-actions .btn-danger { width: 100%; justify-content: center; }
+
+            /* Card sin padding excesivo */
+            .card { padding: 16px; }
+
+            /* Botones de consulta en columna */
+            .query-btns { flex-direction: column; }
+            .query-btns .btn { width: 100%; justify-content: center; }
+
+            /* Tablas: scroll horizontal + texto más pequeño */
+            .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .result-table { font-size: 0.75rem; min-width: 480px; }
+            .result-table th, .result-table td { padding: 9px 10px; }
+
+            /* KPI cards en 2x2 */
+            .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .kpi-mini { padding: 14px; }
+            .kpi-mini-value { font-size: 1.4rem; }
+
+            /* CRUD: botones de acción apilados */
+            .row-actions { flex-direction: row; gap: 4px; }
+            .btn-icon { padding: 7px 8px; font-size: 0.7rem; }
+
+            /* New row form en columna */
+            .new-row-form { flex-direction: column; }
+            .new-row-form input, .new-row-form select { width: 100%; }
+            .new-row-form .btn { width: 100%; justify-content: center; }
+
+            /* Section title */
+            .section-title { font-size: 0.9rem; margin-bottom: 16px; }
+
+            /* Toast más ancho en móvil */
+            .toast { left: 14px; right: 14px; bottom: 80px; text-align: center; justify-content: center; }
+        }
+
+        @media (min-width: 641px) {
+            .bottom-nav { display: none !important; }
+        }
+
+        /* ── GPS MONITOR BANNER ───────────────────────────────────── */
+        #gps-banner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 500;
+            pointer-events: none;
+            padding: 14px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Sora', sans-serif;
+            text-align: center;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #gps-banner.show { display: flex; pointer-events: auto; }
+        #gps-banner.warning {
+            background: linear-gradient(90deg, #92400e, #b45309);
+            color: #fef3c7;
+            box-shadow: 0 4px 20px rgba(245,158,11,0.4);
+        }
+        #gps-banner.danger {
+            background: linear-gradient(90deg, #7f1d1d, #b91c1c);
+            color: #fee2e2;
+            box-shadow: 0 4px 20px rgba(239,68,68,0.5);
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+        .gps-pulse {
+            display: inline-block;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: gpsPulse 1.2s infinite;
+            flex-shrink: 0;
+        }
+        @keyframes gpsPulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.4; transform: scale(1.5); }
+        }
+        #gps-banner button.close-banner {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: inherit;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        #gps-banner button.close-banner:hover { background: rgba(255,255,255,0.35); }
+
+        /* Indicador de visita activa en el header */
+        .visita-activa-chip {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 99px;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--success);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .visita-activa-chip.show { display: inline-flex; }
+        .visita-activa-chip:hover { background: rgba(16,185,129,0.22); }
+
+        /* ── PANTALLA PIN ─────────────────────────────────────────── */
+        #pin-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+        }
+        #pin-screen.show { display: flex; }
+        .pin-logo {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px;
+            margin-bottom: 24px;
+        }
+        .pin-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+        .pin-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .pin-dots {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .pin-dot {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: transparent;
+            transition: all 0.15s;
+        }
+        .pin-dot.filled {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 280px;
+        }
+        .pin-key {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            font-family: 'Sora', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-align: center;
+        }
+        .pin-key:active { background: var(--accent); color: white; transform: scale(0.95); }
+        .pin-key.del { font-size: 1rem; color: var(--text-muted); }
+        .pin-key.empty { background: transparent; border-color: transparent; pointer-events: none; }
+        .pin-error {
+            color: var(--danger);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 16px;
+            min-height: 20px;
+            text-align: center;
+        }
+        .pin-vendedor-chip {
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 99px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- PIN SCREEN -->
+    <div id="pin-screen">
+        <div class="pin-logo">📍</div>
+        <div class="pin-title">Visitas Comerciales</div>
+        <div class="pin-subtitle">Ingresa tu PIN de 4 dígitos para continuar</div>
+        <div id="pin-vendedor-nombre" class="pin-vendedor-chip" style="display:none"></div>
+        <div class="pin-dots">
+            <div class="pin-dot" id="pd1"></div>
+            <div class="pin-dot" id="pd2"></div>
+            <div class="pin-dot" id="pd3"></div>
+            <div class="pin-dot" id="pd4"></div>
+        </div>
+        <div class="pin-keypad">
+            <button class="pin-key" onclick="pinPresionar('1')">1</button>
+            <button class="pin-key" onclick="pinPresionar('2')">2</button>
+            <button class="pin-key" onclick="pinPresionar('3')">3</button>
+            <button class="pin-key" onclick="pinPresionar('4')">4</button>
+            <button class="pin-key" onclick="pinPresionar('5')">5</button>
+            <button class="pin-key" onclick="pinPresionar('6')">6</button>
+            <button class="pin-key" onclick="pinPresionar('7')">7</button>
+            <button class="pin-key" onclick="pinPresionar('8')">8</button>
+            <button class="pin-key" onclick="pinPresionar('9')">9</button>
+            <button class="pin-key empty"></button>
+            <button class="pin-key" onclick="pinPresionar('0')">0</button>
+            <button class="pin-key del" onclick="pinBorrar()">⌫</button>
+        </div>
+        <div class="pin-error" id="pin-error"></div>
+        <div style="margin-top:28px;width:100%;max-width:280px">
+            <div style="text-align:center;font-size:0.72rem;color:var(--text-dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em">¿No eres vendedor?</div>
+            <button onclick="mostrarModoLibre()" style="width:100%;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;color:var(--text);font-family:Sora,sans-serif;font-size:0.82rem;font-weight:600;padding:12px;cursor:pointer">
+                👤 Acceso Gerente / Supervisor
+            </button>
+        </div>
+    </div>
+
+    <!-- PIN LIBRE SCREEN -->
+    <div id="pin-libre-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1001;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px">
+        <div class="pin-logo">👤</div>
+        <div class="pin-title">Acceso Gerente / Supervisor</div>
+        <div class="pin-subtitle">Ingresa el PIN de acceso y tu nombre</div>
+        <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
+            <div class="form-group">
+                <label>PIN de Acceso</label>
+                <input type="password" id="pin-libre-pin" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:0.3em;font-size:1.2rem;text-align:center" oninput="this.value=this.value.replace(/[^0-9]/g,'')"/>
+            </div>
+            <div class="form-group">
+                <label>Tu Nombre Completo</label>
+                <input type="text" id="pin-libre-nombre" placeholder="Ej. Mario Francisco Lozoya" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+            </div>
+        </div>
+        <button onclick="validarPinLibre()" style="width:100%;max-width:320px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:Sora,sans-serif;font-size:0.95rem;font-weight:700;padding:15px;cursor:pointer">
+            Entrar
+        </button>
+        <div class="pin-error" id="pin-libre-error"></div>
+        <button onclick="volverAlPin()" style="margin-top:16px;background:none;border:none;color:var(--text-muted);font-family:Sora,sans-serif;font-size:0.8rem;cursor:pointer">
+            ← Volver
+        </button>
+    </div>
+
+    <!-- GPS MONITOR BANNER -->
+    <div id="gps-banner">
+        <span class="gps-pulse"></span>
+        <span id="gps-banner-msg"></span>
+        <button class="close-banner" onclick="ocultarBanner()">✕</button>
+    </div>
+
+    <div class="header">
+        <div class="header-inner">
+            <div class="header-icon">📍</div>
+            <div style="flex:1">
+                <h1>Visitas Comerciales</h1>
+                <p>Registro y seguimiento de visitas a clientes</p>
+            </div>
+            <span id="visita-activa-chip" class="visita-activa-chip" onclick="showTab('cerrar')">
+                <span style="width:7px;height:7px;border-radius:50%;background:var(--success);animation:gpsPulse 1.2s infinite;display:inline-block"></span>
+                Visita activa
+            </span>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <div class="nav-tabs-inner">
+            <button class="tab-btn active" onclick="showTab('iniciar')">▶ Iniciar Visita</button>
+            <button class="tab-btn" onclick="showTab('cerrar')">✓ Cerrar Visita</button>
+            <button class="tab-btn" onclick="showTab('consultas')">Consultas</button>
+            <button class="tab-btn" onclick="showTab('kpi')">KPIs</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV (móvil) -->
+    <div id="bottom-nav-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid #2a3441;z-index:200;padding:6px 0 env(safe-area-inset-bottom,6px)">
+        <div style="display:flex;justify-content:space-around">
+            <button id="btab-iniciar" onclick="showTab('iniciar')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;color:#3b82f6;font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em">
+                <span style="font-size:1.3rem">▶️</span>Iniciar
+            </button>
+            <button id="btab-cerrar" onclick="showTab('cerrar')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;color:#7d8590;font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em">
+                <span style="font-size:1.3rem">✅</span>Cerrar
+            </button>
+            <button id="btab-consultas" onclick="showTab('consultas')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;color:#7d8590;font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em">
+                <span style="font-size:1.3rem">🔍</span>Consultas
+            </button>
+            <button id="btab-kpi" onclick="showTab('kpi')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;color:#7d8590;font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em">
+                <span style="font-size:1.3rem">📊</span>KPIs
+            </button>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <!-- TAB: INICIAR VISITA -->
+        <div id="tab-iniciar" class="section active">
+            <div class="section-title">Iniciar Visita</div>
+
+            <div class="card">
+                <div class="form-grid">
+
+                    <!-- Coordenadas ocultas para monitor GPS -->
+                    <input type="hidden" id="visita-lat" />
+                    <input type="hidden" id="visita-lon" />
+
+                    <div class="form-group full">
+                        <label>Ubicación del Cliente</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="ubicacion" placeholder="Ubicación del cliente" readonly />
+                            <button class="btn btn-secondary" onclick="obtenerUbicacion()">
+                                🧭 Obtener Ubicación
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Hora de Inicio de Visita <span style="font-weight:400;color:var(--text-muted)">(se registra automáticamente al obtener ubicación)</span></label>
+                        <input type="datetime-local" id="hora-visita" readonly style="color:var(--text-muted);cursor:default" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vendedor</label>
+                        <select id="vendedor" onchange="cargarClientesPorVendedor(this.value)">
+                            <option value="" selected>Selecciona un vendedor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <select id="cliente" disabled>
+                            <option value="" selected>Primero selecciona un vendedor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Visita</label>
+                        <select id="tipo-visita">
+                            <option value="">Selecciona el tipo</option>
+                            <option value="Prospección">Prospección</option>
+                            <option value="Seguimiento">Seguimiento</option>
+                            <option value="Cobranza">Cobranza</option>
+                            <option value="Presentación de producto">Presentación de producto</option>
+                            <option value="Cierre">Cierre</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estado del Cliente</label>
+                        <select id="estado-cliente">
+                            <option value="">Selecciona el estado</option>
+                            <option value="Activo">Activo</option>
+                            <option value="En riesgo">En riesgo</option>
+                            <option value="Inactivo">Inactivo</option>
+                            <option value="Prospecto">Prospecto</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contacto Atendido</label>
+                        <input type="text" id="contacto-nombre" placeholder="Nombre del contacto" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Puesto del Contacto</label>
+                        <input type="text" id="contacto-puesto" placeholder="Ej. Gerente de Compras" />
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Objetivo de la Visita</label>
+                        <input type="text" id="objetivo" placeholder="¿Qué quieres lograr en esta visita?" />
+                    </div>
+
+                </div>
+
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <button class="btn btn-primary" onclick="iniciarVisita()">
+                        ▶ &nbsp;Iniciar Visita
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CERRAR VISITA -->
+        <div id="tab-cerrar" class="section">
+            <div class="section-title">Cerrar Visita</div>
+
+            <div class="card">
+                <div class="form-grid">
+
+                    <div class="form-group full">
+                        <label>Vendedor</label>
+                        <select id="cerrar-vendedor" onchange="cargarVisitasEnProceso(this.value)">
+                            <option value="" selected>Selecciona un vendedor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Visita a Cerrar</label>
+                        <select id="cerrar-visita" disabled>
+                            <option value="">Primero selecciona un vendedor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Resultado de la Visita</label>
+                        <select id="resultado">
+                            <option value="">Selecciona el resultado</option>
+                            <option value="Exitosa">Exitosa</option>
+                            <option value="Sin acuerdo">Sin acuerdo</option>
+                            <option value="Requiere seguimiento">Requiere seguimiento</option>
+                            <option value="Cancelada por cliente">Cancelada por cliente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Probabilidad de Cierre</label>
+                        <select id="prob-cierre">
+                            <option value="">Selecciona</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                            <option value="N/A">N/A</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nivel de Satisfacción del Cliente</label>
+                        <select id="satisfaccion">
+                            <option value="">Selecciona</option>
+                            <option value="5">⭐⭐⭐⭐⭐ Muy satisfecho</option>
+                            <option value="4">⭐⭐⭐⭐ Satisfecho</option>
+                            <option value="3">⭐⭐⭐ Neutral</option>
+                            <option value="2">⭐⭐ Insatisfecho</option>
+                            <option value="1">⭐ Muy insatisfecho</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Competencia Mencionada</label>
+                        <textarea id="competencia" placeholder="¿Qué competidor mencionó el cliente?" rows="2" style="min-height:72px;resize:none"></textarea>
+                        <div class="btn-actions">
+                            <button class="btn btn-danger" id="grabarBtnCompetencia" onclick="grabarVozCampo('competencia', 'grabarBtnCompetencia')">
+                                🎙 Grabar Voz
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Productos / Servicios Tratados</label>
+                        <textarea id="productos-tratados" placeholder="Ej. Producto A, Servicio B, Línea C" rows="2" style="min-height:72px;resize:none"></textarea>
+                        <div class="btn-actions">
+                            <button class="btn btn-danger" id="grabarBtnProductos" onclick="grabarVozCampo('productos-tratados', 'grabarBtnProductos')">
+                                🎙 Grabar Voz
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Próxima Acción</label>
+                        <textarea id="proxima-accion" placeholder="¿Cuál es el siguiente paso?" rows="2" style="min-height:72px;resize:none"></textarea>
+                        <div class="btn-actions">
+                            <button class="btn btn-danger" id="grabarBtnAccion" onclick="grabarVozCampo('proxima-accion', 'grabarBtnAccion')">
+                                🎙 Grabar Voz
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Fecha Compromiso</label>
+                        <input type="date" id="fecha-compromiso" />
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Disparadores por Área <span style="font-weight:400;color:var(--text-muted)">(selecciona todas las que apliquen)</span></label>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
+                                <input type="checkbox" id="disp-logistica" style="accent-color:var(--accent);width:16px;height:16px"> 🚚 Logística / Embarques
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
+                                <input type="checkbox" id="disp-supply" style="accent-color:var(--accent);width:16px;height:16px"> 📦 Supply Chain / Programación
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
+                                <input type="checkbox" id="disp-creditos" style="accent-color:var(--accent);width:16px;height:16px"> 💳 Créditos / Cobranza
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
+                                <input type="checkbox" id="disp-direccion" style="accent-color:var(--accent);width:16px;height:16px"> 📊 Dirección Comercial
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Resumen / Conclusiones</label>
+                        <textarea id="conclusiones" placeholder="Escribe las conclusiones de la visita..."></textarea>
+                        <div class="btn-actions">
+                            <button class="btn btn-danger" id="grabarBtn" onclick="grabarVoz()">
+                                🎙 Grabar Voz
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <button class="btn btn-primary" style="background: var(--success);" onclick="cerrarVisita()">
+                        ✓ &nbsp;Cerrar Visita
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CONSULTAS -->
+        <div id="tab-consultas" class="section">
+            <div class="section-title">Consultar Datos</div>
+
+            <div class="query-btns">
+                <button class="btn btn-secondary" id="consultarVisitasBtn" onclick="consultarVisitas()">📋 Visitas Registradas</button>
+                <button class="btn btn-secondary" id="consultarVendedoresBtn" onclick="consultarVendedores()">👤 Vendedores</button>
+                <button class="btn btn-secondary" id="vendedoresClientesBtn" onclick="consultarVendedoresClientes()">🔗 Vendedores – Clientes</button>
+            </div>
+
+            <div id="resultado-consulta"></div>
+        </div>
+
+        <!-- TAB: KPI -->
+        <div id="tab-kpi" class="section">
+            <div class="section-title">KPI de Visitas</div>
+
+            <div class="kpi-grid" id="kpi-summary"></div>
+
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 14px 24px; border-bottom: 1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+                    <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Cumplimiento por Vendedor</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-secondary" id="btnVerTabla" onclick="toggleKPIView('tabla')" style="padding:6px 14px;font-size:0.75rem;">📋 Tabla</button>
+                        <button class="btn btn-secondary" id="btnVerGrafica" onclick="toggleKPIView('grafica')" style="padding:6px 14px;font-size:0.75rem;">📊 Gráfica</button>
+                    </div>
+                </div>
+                <div id="kpi-tabla-view">
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th>Planeadas</th>
+                                <th>Realizadas</th>
+                                <th>No Válidas</th>
+                                <th>Cumplimiento</th>
+                                <th>Progreso</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaKPI"></tbody>
+                    </table>
+                </div>
+                <div id="kpi-grafica-view" style="display:none; padding:24px;">
+                    <canvas id="graficaKPI"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">✓ &nbsp;Registro guardado correctamente</div>
+
+    <script>
+        // ── SUPABASE CONFIG ──────────────────────────────────────────
+        const SUPABASE_URL = 'https://ctisvtadmxrmphwququb.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_xG4LXniFoM9yzGcGmypJbA_GxpMqvjC';
+
+        async function sbFetch(path, options = {}) {
+            const { prefer, headers: extraHeaders, ...fetchOptions } = options;
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+                ...fetchOptions,
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': prefer || 'return=representation',
+                    ...extraHeaders
+                }
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                console.error('sbFetch error', res.status, err);
+                throw new Error(err.message || err.hint || `Error ${res.status}`);
+            }
+            return res.status === 204 ? null : res.json();
+        }
+        // ─────────────────────────────────────────────────────────────
+
+        // Datos locales para selects y KPI (mientras no haya tablas de vendedores/clientes en Supabase)
+        let vendedoresLocal = [];
+        let visitas = [];
+        let reconocimiento;
+        let grabando = false;
+
+        // ── PIN LOGIN ────────────────────────────────────────────────
+        let pinActual = '';
+        let vendedorSesion = null; // { nombre, proveedor } del vendedor autenticado
+
+        function pinPresionar(digit) {
+            if (pinActual.length >= 4) return;
+            pinActual += digit;
+            actualizarDots();
+            document.getElementById('pin-error').textContent = '';
+            if (pinActual.length === 4) {
+                setTimeout(() => validarPin(), 120); // pequeña pausa visual
+            }
+        }
+
+        function pinBorrar() {
+            pinActual = pinActual.slice(0, -1);
+            actualizarDots();
+            document.getElementById('pin-error').textContent = '';
+        }
+
+        function actualizarDots() {
+            for (let i = 1; i <= 4; i++) {
+                const dot = document.getElementById('pd' + i);
+                dot.classList.toggle('filled', i <= pinActual.length);
+            }
+        }
+
+        async function validarPin() {
+            try {
+                const data = await sbFetch(
+                    'vendedores?select=nombre,proveedor,pin&pin=eq.' + encodeURIComponent(pinActual)
+                );
+                if (data && data.length > 0) {
+                    const v = data[0];
+                    // Sesión solo en memoria (se pide PIN al reabrir)
+                    vendedorSesion = { nombre: v.nombre, proveedor: v.proveedor || '', modo: 'vendedor' };
+                    // Mostrar nombre brevemente antes de entrar
+                    const chip = document.getElementById('pin-vendedor-nombre');
+                    chip.textContent = '✓ ' + v.nombre;
+                    chip.style.display = 'block';
+                    setTimeout(() => cerrarPinScreen(), 900);
+                } else {
+                    // PIN incorrecto
+                    pinActual = '';
+                    actualizarDots();
+                    document.getElementById('pin-error').textContent = 'PIN incorrecto. Intenta de nuevo.';
+                    // Vibrar si está disponible
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                }
+            } catch(e) {
+                pinActual = '';
+                actualizarDots();
+                document.getElementById('pin-error').textContent = 'Error de conexión. Intenta de nuevo.';
+            }
+        }
+
+        function cerrarPinScreen() {
+            document.getElementById('pin-screen').classList.remove('show');
+            aplicarVendedorSesion();
+            // Recargar selects con datos frescos y luego aplicar sesión
+            cargarSelects().then(() => aplicarVendedorSesion());
+        }
+
+        function aplicarVendedorSesion() {
+            if (!vendedorSesion) return;
+
+            if (vendedorSesion.modo === 'libre') {
+                // ── MODO LIBRE: reemplazar selects por inputs de texto ──
+                // Vendedor → input de texto con nombre prellenado y bloqueado
+                const sv = document.getElementById('vendedor');
+                sv.outerHTML = '<input type="text" id="vendedor" value="' + escHtml(vendedorSesion.nombre) + '" readonly style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-family:Sora,sans-serif;font-size:0.875rem;padding:10px 14px;width:100%;cursor:default" />';
+
+                // Cliente → input de texto libre
+                const sc = document.getElementById('cliente');
+                sc.outerHTML = '<input type="text" id="cliente" placeholder="Escribe el nombre del cliente o prospecto" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:Sora,sans-serif;font-size:0.875rem;padding:10px 14px;width:100%" />';
+
+                // Badge modo libre en header
+                const chip = document.getElementById('visita-activa-chip');
+                const badge = document.createElement('span');
+                badge.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:99px;padding:4px 12px;font-size:0.72rem;font-weight:600;color:var(--warning)';
+                badge.textContent = '👤 Gerente / Supervisor';
+                chip.parentNode.insertBefore(badge, chip);
+
+                // Cerrar visita — vendedor como texto prellenado
+                const scv = document.getElementById('cerrar-vendedor');
+                scv.outerHTML = '<input type="text" id="cerrar-vendedor" value="' + escHtml(vendedorSesion.nombre) + '" readonly style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-family:Sora,sans-serif;font-size:0.875rem;padding:10px 14px;width:100%;cursor:default" />';
+
+                // Cargar visitas en proceso para este usuario
+                setTimeout(() => cargarVisitasEnProceso(vendedorSesion.nombre), 300);
+
+            } else {
+                // ── MODO VENDEDOR NORMAL ──
+                const sv = document.getElementById('vendedor');
+                const valBuscado = vendedorSesion.proveedor + '|' + vendedorSesion.nombre;
+                for (let opt of sv.options) {
+                    if (opt.value === valBuscado) { opt.selected = true; break; }
+                }
+                sv.disabled = true;
+                cargarClientesPorVendedor(valBuscado);
+
+                const sc = document.getElementById('cerrar-vendedor');
+                for (let opt of sc.options) {
+                    if (opt.value === vendedorSesion.nombre) { opt.selected = true; break; }
+                }
+                sc.disabled = true;
+                cargarVisitasEnProceso(vendedorSesion.nombre);
+            }
+        }
+
+        const PIN_LIBRE = '9898';
+
+        function mostrarModoLibre() {
+            document.getElementById('pin-screen').classList.remove('show');
+            document.getElementById('pin-libre-screen').style.display = 'flex';
+            setTimeout(() => document.getElementById('pin-libre-pin').focus(), 300);
+        }
+
+        function volverAlPin() {
+            document.getElementById('pin-libre-screen').style.display = 'none';
+            document.getElementById('pin-screen').classList.add('show');
+            document.getElementById('pin-libre-pin').value = '';
+            document.getElementById('pin-libre-nombre').value = '';
+            document.getElementById('pin-libre-error').textContent = '';
+        }
+
+        function validarPinLibre() {
+            const pin    = document.getElementById('pin-libre-pin').value.trim();
+            const nombre = document.getElementById('pin-libre-nombre').value.trim();
+
+            if (!pin || !nombre) {
+                document.getElementById('pin-libre-error').textContent = 'Completa el PIN y tu nombre.';
+                return;
+            }
+            if (pin !== PIN_LIBRE) {
+                document.getElementById('pin-libre-error').textContent = 'PIN incorrecto.';
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                return;
+            }
+
+            // Sesión solo en memoria (se pide PIN al reabrir)
+            vendedorSesion = { nombre, proveedor: '', modo: 'libre' };
+
+            document.getElementById('pin-libre-screen').style.display = 'none';
+            aplicarVendedorSesion();
+            // Recargar visitas en proceso con nombre correcto
+            setTimeout(() => cargarVisitasEnProceso(nombre), 500);
+        }
+
+
+
+        // ── GPS MONITOR ──────────────────────────────────────────────
+        const GPS_RADIO_INVALIDA    = 250; // metros → cierre automático
+        const GPS_RADIO_ADVERTENCIA = 200; // metros → aviso al vendedor
+        let gpsWatchId        = null;
+        let visitaActivaId    = null;
+        let visitaActivaLat   = null;
+        let visitaActivaLon   = null;
+        let bannerVisible     = false;
+        let wakeLock          = null;  // Screen Wake Lock API
+        let invalidando       = false; // evita doble ejecución de invalidar
+
+        // ── WAKE LOCK — mantiene pantalla activa en Android/Chrome ───
+        async function pedirWakeLock() {
+            if (!('wakeLock' in navigator)) return; // no soportado
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => { wakeLock = null; });
+            } catch(e) {
+                console.warn('Wake Lock no disponible:', e.message);
+            }
+        }
+
+        async function liberarWakeLock() {
+            if (wakeLock) {
+                try { await wakeLock.release(); } catch(e) { /* ignore */ }
+                wakeLock = null;
+            }
+        }
+
+        // Si el sistema libera el Wake Lock (ej. pantalla apagada manualmente),
+        // lo volvemos a pedir cuando el usuario regrese a la app
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible' && visitaActivaId) {
+                // Re-adquirir Wake Lock
+                await pedirWakeLock();
+                // Verificar posición actual al volver a la app
+                verificarPosicionAhora();
+            }
+        });
+
+        // ── NOTIFICACIONES PUSH NATIVAS ──────────────────────────────
+        async function pedirPermisoNotificaciones() {
+            if (!('Notification' in window)) return false;
+            if (Notification.permission === 'granted') return true;
+            if (Notification.permission === 'denied') return false;
+            const result = await Notification.requestPermission();
+            return result === 'granted';
+        }
+
+        function enviarNotificacion(titulo, cuerpo, icono = '⚠️') {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            try {
+                const n = new Notification(titulo, {
+                    body: cuerpo,
+                    icon: 'icon-192.png',
+                    badge: 'icon-192.png',
+                    tag: 'visita-gps',       // reemplaza notificación anterior en lugar de apilarlas
+                    renotify: true,
+                    requireInteraction: false,
+                    vibrate: [200, 100, 200]
+                });
+                // Al tocar la notificación, abre la app y va a Cerrar Visita
+                n.onclick = () => { window.focus(); showTab('cerrar'); };
+            } catch(e) { console.warn('Notificación error:', e); }
+        }
+
+        // ── VERIFICACIÓN PUNTUAL (cuando regresa a la app) ───────────
+        function verificarPosicionAhora() {
+            if (!visitaActivaId || !navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(
+                async function(pos) {
+                    if (!visitaActivaId) return;
+                    const dist = calcularDistancia(
+                        visitaActivaLat, visitaActivaLon,
+                        pos.coords.latitude, pos.coords.longitude
+                    );
+                    if (dist >= GPS_RADIO_INVALIDA) {
+                        await invalidarVisitaAutomatica(visitaActivaId, dist);
+                    } else if (dist >= GPS_RADIO_ADVERTENCIA) {
+                        mostrarBanner('warning',
+                            `⚠️ Estás a ${Math.round(dist)}m del cliente. ¡Cierra la visita antes de irte!`);
+                        enviarNotificacion(
+                            '⚠️ ¡Alerta de Visita!',
+                            `Estás a ${Math.round(dist)}m del cliente. Cierra la visita antes de irte.`
+                        );
+                    } else {
+                        if (bannerVisible) ocultarBanner();
+                    }
+                },
+                function(err) { console.warn('GPS puntual error:', err.message); },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        // ── HAVERSINE ────────────────────────────────────────────────
+        function calcularDistancia(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 +
+                      Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLon/2)**2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+
+        function mostrarBanner(tipo, msg) {
+            const b = document.getElementById('gps-banner');
+            document.getElementById('gps-banner-msg').textContent = msg;
+            b.className = 'show ' + tipo;
+            bannerVisible = true;
+        }
+
+        function ocultarBanner() {
+            const b = document.getElementById('gps-banner');
+            b.className = '';
+            bannerVisible = false;
+        }
+
+        async function iniciarMonitorGPS(lat, lon, idVisita) {
+            if (!navigator.geolocation) return;
+            visitaActivaId  = idVisita;
+            visitaActivaLat = lat;
+            visitaActivaLon = lon;
+            invalidando     = false;
+
+            // Mostrar chip de visita activa en header
+            document.getElementById('visita-activa-chip').classList.add('show');
+
+            // Pedir Wake Lock y permiso de notificaciones
+            await pedirWakeLock();
+            await pedirPermisoNotificaciones();
+
+            if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
+
+            gpsWatchId = navigator.geolocation.watchPosition(
+                async function(pos) {
+                    if (!visitaActivaId || invalidando) return;
+                    const dist = calcularDistancia(
+                        visitaActivaLat, visitaActivaLon,
+                        pos.coords.latitude, pos.coords.longitude
+                    );
+                    if (dist >= GPS_RADIO_INVALIDA) {
+                        await invalidarVisitaAutomatica(visitaActivaId, dist);
+                    } else if (dist >= GPS_RADIO_ADVERTENCIA) {
+                        mostrarBanner('warning',
+                            `⚠️ Te estás alejando del cliente (${Math.round(dist)}m). ¡Cierra la visita antes de irte!`);
+                        enviarNotificacion(
+                            '⚠️ ¡Alerta de Visita!',
+                            `Te estás alejando del cliente (${Math.round(dist)}m de 250m). Cierra la visita antes de irte.`
+                        );
+                    } else {
+                        if (bannerVisible) ocultarBanner();
+                    }
+                },
+                function(err) { console.warn('GPS watch error:', err.message); },
+                { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
+            );
+        }
+
+        async function detenerMonitorGPS() {
+            if (gpsWatchId !== null) {
+                navigator.geolocation.clearWatch(gpsWatchId);
+                gpsWatchId = null;
+            }
+            visitaActivaId  = null;
+            visitaActivaLat = null;
+            visitaActivaLon = null;
+            invalidando     = false;
+            ocultarBanner();
+            await liberarWakeLock();
+            document.getElementById('visita-activa-chip').classList.remove('show');
+        }
+
+        async function invalidarVisitaAutomatica(idVisita, distancia) {
+            if (invalidando) return; // doble disparo del watchPosition
+            invalidando = true;
+            detenerMonitorGPS();
+
+            const _d = new Date();
+            const horaFin = _d.getFullYear() + '-' +
+                String(_d.getMonth()+1).padStart(2,'0') + '-' +
+                String(_d.getDate()).padStart(2,'0') + 'T' +
+                String(_d.getHours()).padStart(2,'0') + ':' +
+                String(_d.getMinutes()).padStart(2,'0');
+
+            try {
+                await sbFetch('visitas?id=eq.' + idVisita, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        estatus:      'Visita No Válida',
+                        conclusiones: 'Visita invalidada automáticamente: el vendedor se alejó ' + Math.round(distancia) + 'm del punto de inicio sin cerrar la visita.',
+                        hora_fin:     horaFin,
+                        resultado:    'Visita No Válida Por Falta de Cierre'
+                    })
+                });
+            } catch(e) {
+                console.error('Error al invalidar visita:', e.message);
+            }
+
+            mostrarBanner('danger',
+                '🚫 Visita marcada como No Válida: te alejaste más de 250m sin cerrarla.');
+            enviarNotificacion(
+                '🚫 Visita No Válida',
+                'Te alejaste más de 250m sin cerrar la visita. Fue marcada como No Válida.'
+            );
+            setTimeout(() => ocultarBanner(), 8000);
+            actualizarKPI();
+        }
+
+        // ── TABS ─────────────────────────────────────────────────────
+        function showTab(name) {
+            // Secciones
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const sec = document.getElementById('tab-' + name);
+            if (sec) sec.classList.add('active');
+
+            // Top nav
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const topBtn = document.querySelector('.tab-btn[onclick*="' + name + '"]');
+            if (topBtn) topBtn.classList.add('active');
+
+            // Bottom nav — resaltar botón activo con color azul
+            ['iniciar','cerrar','consultas','kpi'].forEach(t => {
+                const b = document.getElementById('btab-' + t);
+                if (b) b.style.color = t === name ? '#3b82f6' : '#7d8590';
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (name === 'kpi') actualizarKPI();
+        }
+
+        // ── HELPERS UI ───────────────────────────────────────────────
+        function showLoading(containerId) {
+            document.getElementById(containerId).innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon" style="animation:spin 1s linear infinite;display:inline-block">⏳</div>
+                    <p>Cargando datos desde Supabase...</p>
+                </div>`;
+        }
+
+        function showError(containerId, msg) {
+            document.getElementById(containerId).innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <p style="color:var(--danger)">${msg}</p>
+                    <p style="margin-top:8px;font-size:0.75rem;color:var(--text-dim)">Verifica que la tabla exista en Supabase y que RLS permita lectura pública.</p>
+                </div>`;
+        }
+
+        function showToast(msg = 'Registro guardado correctamente', isError = false) {
+            const t = document.getElementById('toast');
+            t.innerHTML = isError ? `✗ &nbsp;${msg}` : `✓ &nbsp;${msg}`;
+            t.style.background = isError ? 'var(--danger)' : 'var(--success)';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        // ── CARGAR SELECTS (desde Supabase) ──────────────────────────
+        async function cargarSelects() {
+            try {
+                const vData = await sbFetch('vendedores?select=nombre,proveedor,visitas_planeadas&order=nombre');
+                vendedoresLocal = vData;
+                poblarSelectVendedores(vData);
+            } catch(e) {
+                console.warn('No se pudo cargar vendedores desde Supabase:', e.message);
+                vendedoresLocal = [];
+                poblarSelectVendedores([]);
+            }
+            // Clientes se cargan dinámicamente al seleccionar vendedor
+        }
+
+        function poblarSelectVendedores(lista) {
+            // Select de Iniciar Visita — value = proveedor|nombre para tener ambos datos
+            const sv = document.getElementById("vendedor");
+            sv.innerHTML = '<option value="">Selecciona un vendedor</option>';
+            lista.forEach(v => {
+                const o = document.createElement("option");
+                o.value = v.proveedor + '|' + v.nombre;
+                o.textContent = v.nombre;
+                sv.appendChild(o);
+            });
+            // Select de Cerrar Visita — value = nombre (para filtrar visitas en proceso)
+            const sc = document.getElementById("cerrar-vendedor");
+            sc.innerHTML = '<option value="">Selecciona un vendedor</option>';
+            lista.forEach(v => {
+                const o = document.createElement("option");
+                o.value = v.nombre; o.textContent = v.nombre;
+                sc.appendChild(o);
+            });
+        }
+
+        // ── CARGAR CLIENTES SEGUN VENDEDOR ───────────────────────────
+        async function cargarClientesPorVendedor(val) {
+            const sc = document.getElementById("cliente");
+            sc.innerHTML = '<option value="">Cargando...</option>';
+            sc.disabled = true;
+
+            if (!val) {
+                sc.innerHTML = '<option value="">Primero selecciona un vendedor</option>';
+                return;
+            }
+
+            // El value del select tiene formato "proveedor|nombre"
+            const partes = val.split('|');
+            const numProveedor = partes[0];
+
+            try {
+                const data = await sbFetch(
+                    'vendedores_clientes?select=cliente,nombre_cliente&vendedor=eq.' +
+                    encodeURIComponent(numProveedor) +
+                    '&order=nombre_cliente'
+                );
+                sc.innerHTML = '<option value="">Selecciona un cliente</option>';
+                if (data.length === 0) {
+                    sc.innerHTML = '<option value="">Sin clientes asignados</option>';
+                } else {
+                    // Eliminar duplicados por nombre_cliente
+                    const vistos = new Set();
+                    data.forEach(row => {
+                        if (vistos.has(row.nombre_cliente)) return;
+                        vistos.add(row.nombre_cliente);
+                        const o = document.createElement("option");
+                        o.value = row.nombre_cliente;
+                        o.textContent = row.nombre_cliente;
+                        sc.appendChild(o);
+                    });
+                    sc.disabled = false;
+                }
+            } catch(e) {
+                sc.innerHTML = '<option value="">Error al cargar clientes</option>';
+                console.error('Error clientes:', e.message);
+            }
+        }
+
+        // ── INICIAR VISITA (INSERT con estatus En Proceso) ───────────
+        async function iniciarVisita() {
+            const vendedorEl  = document.getElementById('vendedor');
+            const vendedorVal = vendedorEl.tagName === 'SELECT' ? vendedorEl.value : '';
+            const vendedor    = vendedorSesion && vendedorSesion.modo === 'libre'
+                ? vendedorSesion.nombre
+                : (vendedorVal ? vendedorVal.split('|')[1] : '');
+            const cliente     = document.getElementById('cliente').value;
+            const horaVisita      = document.getElementById('hora-visita').value;
+            const ubicacion       = document.getElementById('ubicacion').value;
+            const tipoVisita      = document.getElementById('tipo-visita').value;
+            const estadoCliente   = document.getElementById('estado-cliente').value;
+            const contactoNombre  = document.getElementById('contacto-nombre').value.trim();
+            const contactoPuesto  = document.getElementById('contacto-puesto').value.trim();
+            const objetivo        = document.getElementById('objetivo').value.trim();
+            const lat             = parseFloat(document.getElementById('visita-lat').value);
+            const lon             = parseFloat(document.getElementById('visita-lon').value);
+
+            if (!vendedor || !cliente || !horaVisita || !ubicacion) {
+                alert('Por favor, completa los campos obligatorios: ubicación, vendedor, cliente y hora de inicio.');
+                return;
+            }
+            if (isNaN(lat) || isNaN(lon)) {
+                alert('Por favor obtén la ubicación GPS antes de iniciar la visita.');
+                return;
+            }
+
+            const regBtn = document.querySelector('button[onclick="iniciarVisita()"]');
+            regBtn.textContent = '⏳ Guardando...';
+            regBtn.disabled = true;
+
+            try {
+                const result = await sbFetch('visitas', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        vendedor,
+                        cliente,
+                        hora_visita: horaVisita,
+                        ubicacion,
+                        tipo_visita: tipoVisita || null,
+                        estado_cliente: estadoCliente || null,
+                        contacto_nombre: contactoNombre || null,
+                        contacto_puesto: contactoPuesto || null,
+                        objetivo: objetivo || null,
+                        lat: lat,
+                        lon: lon,
+                        estatus: 'En Proceso',
+                        conclusiones: ''
+                    })
+                });
+
+                // Iniciar monitor GPS con el ID de la visita recién creada
+                if (result && result.length > 0 && result[0].id) {
+                    iniciarMonitorGPS(lat, lon, result[0].id);
+                }
+
+                visitas.push({ vendedor, cliente, hora_visita: horaVisita, ubicacion, estatus: 'En Proceso', conclusiones: '' });
+                actualizarKPI();
+                showToast('Visita iniciada — GPS activo, no te alejes sin cerrar ✓');
+
+                // Limpiar formulario
+                document.getElementById('vendedor').value = '';
+                document.getElementById('cliente').innerHTML = '<option value="">Primero selecciona un vendedor</option>';
+                document.getElementById('cliente').disabled = true;
+                document.getElementById('ubicacion').value = '';
+                document.getElementById('hora-visita').value = '';
+                document.getElementById('visita-lat').value = '';
+                document.getElementById('visita-lon').value = '';
+                document.getElementById('tipo-visita').value = '';
+                document.getElementById('estado-cliente').value = '';
+                document.getElementById('contacto-nombre').value = '';
+                document.getElementById('contacto-puesto').value = '';
+                document.getElementById('objetivo').value = '';
+
+            } catch(e) {
+                showToast('Error al guardar: ' + e.message, true);
+            } finally {
+                regBtn.innerHTML = '▶ &nbsp;Iniciar Visita';
+                regBtn.disabled = false;
+            }
+        }
+
+        // ── SINCRONIZAR VENDEDORES EN EL SELECT DE CERRAR ───────────
+        function sincronizarVendedoresCerrar() {
+            const sc = document.getElementById('cerrar-vendedor');
+            const current = sc.value;
+            sc.innerHTML = '<option value="">Selecciona un vendedor</option>';
+            vendedoresLocal.forEach(v => {
+                const o = document.createElement('option');
+                o.value = v.nombre; o.textContent = v.nombre;
+                if (v.nombre === current) o.selected = true;
+                sc.appendChild(o);
+            });
+            const sv = document.getElementById('cerrar-visita');
+            sv.innerHTML = '<option value="">Primero selecciona un vendedor</option>';
+            sv.disabled = true;
+        }
+
+        // ── CARGAR VISITAS EN PROCESO POR VENDEDOR ──────────────────
+        async function cargarVisitasEnProceso(vendedorNombre) {
+            const sv = document.getElementById('cerrar-visita');
+            sv.innerHTML = '<option value="">Cargando...</option>';
+            sv.disabled = true;
+
+            // En modo libre, tomar el nombre del input si no se pasó
+            if (!vendedorNombre && vendedorSesion && vendedorSesion.modo === 'libre') {
+                vendedorNombre = vendedorSesion.nombre;
+            }
+
+            if (!vendedorNombre) {
+                sv.innerHTML = '<option value="">Primero selecciona un vendedor</option>';
+                return;
+            }
+
+            try {
+                const data = await sbFetch(
+                    'visitas?select=id,cliente,hora_visita&vendedor=eq.' +
+                    encodeURIComponent(vendedorNombre) +
+                    '&estatus=eq.En%20Proceso&order=hora_visita.desc'
+                );
+                if (data.length === 0) {
+                    sv.innerHTML = '<option value="">Sin visitas en proceso</option>';
+                } else {
+                    sv.innerHTML = '<option value="">Selecciona la visita a cerrar</option>';
+                    data.forEach(v => {
+                        const o = document.createElement('option');
+                        o.value = v.id;
+                        const hora = (v.hora_visita || '').replace('T', ' ').slice(0, 16);
+                        o.textContent = escHtml(v.cliente) + ' — ' + hora;
+                        sv.appendChild(o);
+                    });
+                    sv.disabled = false;
+                }
+            } catch(e) {
+                sv.innerHTML = '<option value="">Error al cargar visitas</option>';
+                console.error('Error visitas en proceso:', e.message);
+            }
+        }
+
+        // ── CERRAR VISITA (PATCH estatus + conclusiones + hora_fin + nuevos campos) ──
+        async function cerrarVisita() {
+            const visitaId          = document.getElementById('cerrar-visita').value;
+            const conclusiones      = document.getElementById('conclusiones').value.trim();
+            const resultado         = document.getElementById('resultado').value;
+            const probCierre        = document.getElementById('prob-cierre').value;
+            const satisfaccion      = document.getElementById('satisfaccion').value;
+            const competencia       = document.getElementById('competencia').value.trim();
+            const productosTratados = document.getElementById('productos-tratados').value.trim();
+            const proximaAccion     = document.getElementById('proxima-accion').value.trim();
+            const fechaCompromiso   = document.getElementById('fecha-compromiso').value;
+
+            const disparadores = [];
+            if (document.getElementById('disp-logistica').checked)  disparadores.push('Logística/Embarques');
+            if (document.getElementById('disp-supply').checked)     disparadores.push('Supply Chain/Programación');
+            if (document.getElementById('disp-creditos').checked)   disparadores.push('Créditos/Cobranza');
+            if (document.getElementById('disp-direccion').checked)  disparadores.push('Dirección Comercial');
+
+            if (!visitaId) {
+                alert('Selecciona la visita que deseas cerrar.');
+                return;
+            }
+            if (!conclusiones) {
+                alert('Escribe un resumen o conclusiones de la visita antes de cerrar.');
+                return;
+            }
+
+            const cerrarBtn = document.querySelector('button[onclick="cerrarVisita()"]');
+            cerrarBtn.textContent = '⏳ Cerrando...';
+            cerrarBtn.disabled = true;
+
+            const _d = new Date();
+            const horaFin = _d.getFullYear() + '-' +
+                String(_d.getMonth()+1).padStart(2,'0') + '-' +
+                String(_d.getDate()).padStart(2,'0') + 'T' +
+                String(_d.getHours()).padStart(2,'0') + ':' +
+                String(_d.getMinutes()).padStart(2,'0');
+
+            // Calcular duración
+            let duracion = null;
+            try {
+                const visitaData = await sbFetch('visitas?id=eq.' + visitaId + '&select=hora_visita');
+                if (visitaData && visitaData.length > 0 && visitaData[0].hora_visita) {
+                    const diff = new Date(horaFin) - new Date(visitaData[0].hora_visita);
+                    if (diff > 0) {
+                        const hh = String(Math.floor(diff / 3600000)).padStart(2,'0');
+                        const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+                        duracion = hh + ':' + mm;
+                    }
+                }
+            } catch(e) { /* si falla, se guarda sin duración */ }
+
+            try {
+                const updated = await sbFetch('visitas?id=eq.' + visitaId, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        estatus: 'Cerrada',
+                        conclusiones,
+                        hora_fin: horaFin,
+                        resultado: resultado || null,
+                        prob_cierre: probCierre || null,
+                        satisfaccion: satisfaccion ? parseInt(satisfaccion) : null,
+                        competencia: competencia || null,
+                        productos_tratados: productosTratados || null,
+                        proxima_accion: proximaAccion || null,
+                        fecha_compromiso: fechaCompromiso || null,
+                        disparadores: disparadores.length > 0 ? disparadores.join(', ') : null,
+                        ...(duracion && { duracion })
+                    })
+                });
+
+                if (!updated || updated.length === 0) {
+                    showToast('No se encontró la visita o no tienes permisos para actualizarla.', true);
+                    return;
+                }
+
+                showToast('Visita cerrada correctamente');
+
+                // Detener monitor GPS al cerrar la visita correctamente
+                detenerMonitorGPS();
+
+                // Si el tab de consultas estaba activo, refrescar automáticamente
+                const tabConsultas = document.getElementById('tab-consultas');
+                if (tabConsultas && tabConsultas.classList.contains('active')) {
+                    setTimeout(() => consultarVisitas(), 800);
+                }
+
+                // Limpiar formulario
+                document.getElementById('cerrar-vendedor').value = '';
+                document.getElementById('cerrar-visita').innerHTML = '<option value="">Primero selecciona un vendedor</option>';
+                document.getElementById('cerrar-visita').disabled = true;
+                document.getElementById('conclusiones').value = '';
+                document.getElementById('resultado').value = '';
+                document.getElementById('prob-cierre').value = '';
+                document.getElementById('satisfaccion').value = '';
+                document.getElementById('competencia').value = '';
+                document.getElementById('productos-tratados').value = '';
+                document.getElementById('proxima-accion').value = '';
+                document.getElementById('fecha-compromiso').value = '';
+                document.getElementById('disp-logistica').checked = false;
+                document.getElementById('disp-supply').checked = false;
+                document.getElementById('disp-creditos').checked = false;
+                document.getElementById('disp-direccion').checked = false;
+
+                if (grabando && reconocimiento) reconocimiento.stop();
+
+            } catch(e) {
+                showToast('Error al cerrar visita: ' + e.message, true);
+            } finally {
+                cerrarBtn.innerHTML = '✓ &nbsp;Cerrar Visita';
+                cerrarBtn.disabled = false;
+            }
+        }
+
+        // ── OBTENER UBICACIÓN ────────────────────────────────────────
+        function obtenerUbicacion() {
+            if (!navigator.geolocation) { alert('Geolocalización no soportada en este navegador.'); return; }
+            const btn = document.querySelector('button[onclick="obtenerUbicacion()"]');
+            const input = document.getElementById('ubicacion');
+            btn.textContent = '⏳ Obteniendo...';
+            btn.disabled = true;
+            input.value = '';
+            const resetBtn = () => { btn.innerHTML = '🧭 Obtener Ubicación'; btn.disabled = false; };
+
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                const lat = pos.coords.latitude, lon = pos.coords.longitude;
+                // Guardar coordenadas para el monitor GPS
+                document.getElementById('visita-lat').value = lat;
+                document.getElementById('visita-lon').value = lon;
+
+                const _d = new Date();
+                const horaLocal = _d.getFullYear() + '-' +
+                    String(_d.getMonth()+1).padStart(2,'0') + '-' +
+                    String(_d.getDate()).padStart(2,'0') + 'T' +
+                    String(_d.getHours()).padStart(2,'0') + ':' +
+                    String(_d.getMinutes()).padStart(2,'0');
+                document.getElementById('hora-visita').value = horaLocal;
+
+                // Usar OpenStreetMap Nominatim (gratuito, sin API key)
+                fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es`, {
+                    headers: { 'Accept-Language': 'es' }
+                })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d && d.display_name) {
+                            input.value = d.display_name;
+                        } else {
+                            input.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                        }
+                        resetBtn();
+                    })
+                    .catch(() => { input.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`; resetBtn(); });
+            }, function(err) {
+                resetBtn();
+                const msgs = { 1:'Permiso denegado. Habilítalo en configuración.', 2:'No se pudo detectar la posición.', 3:'Tiempo agotado. Intenta de nuevo.' };
+                alert(msgs[err.code] || 'Error al obtener ubicación.');
+            }, { timeout: 15000, enableHighAccuracy: true });
+        }
+
+        // ── CONSULTAR VISITAS (desde Supabase) ───────────────────────
+        async function consultarVisitas() {
+            showLoading('resultado-consulta');
+            try {
+                const data = await sbFetch('visitas?select=*&order=hora_visita.desc');
+                if (data.length === 0) {
+                    document.getElementById('resultado-consulta').innerHTML = `
+                        <div class="empty-state"><div class="empty-state-icon">📭</div><p>No hay visitas registradas aún.</p></div>`;
+                    return;
+                }
+                visitas = data;
+
+                document.getElementById('resultado-consulta').innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                        <span style="font-size:0.78rem;color:var(--text-muted)">${data.length} registros</span>
+                        <span style="font-size:0.72rem;color:var(--text-dim)">← Scroll horizontal y vertical →</span>
+                    </div>
+                    <div class="visitas-scroll-wrap">
+                        <table>
+                            <thead><tr>
+                                <th>Vendedor</th>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Estado Cliente</th>
+                                <th>Contacto</th>
+                                <th>Puesto</th>
+                                <th>Objetivo</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Duración</th>
+                                <th>Estatus</th>
+                                <th>Resultado</th>
+                                <th>Satisfacción</th>
+                                <th>Prob. Cierre</th>
+                                <th>Competencia</th>
+                                <th>Productos Tratados</th>
+                                <th>Próxima Acción</th>
+                                <th>Fecha Compromiso</th>
+                                <th>Disparadores</th>
+                                <th>Conclusiones</th>
+                                <th>Ubicación</th>
+                            </tr></thead>
+                            <tbody>
+                                ${data.map(v => {
+                                    const badgeEstatus   = v.estatus === 'Cerrada' ? 'badge-green' : v.estatus === 'Visita No Válida' ? 'badge-red' : 'badge-yellow';
+                                    const badgeResultado = v.resultado === 'Exitosa' ? 'badge-green' : v.resultado === 'Requiere seguimiento' ? 'badge-yellow' : v.resultado ? 'badge-red' : '';
+                                    const stars     = v.satisfaccion ? '⭐'.repeat(v.satisfaccion) : '—';
+                                    const badgeProb = v.prob_cierre === 'Alta' ? 'badge-green' : v.prob_cierre === 'Media' ? 'badge-yellow' : v.prob_cierre === 'Baja' ? 'badge-red' : '';
+                                    let duracion = '—';
+                                    if (v.hora_visita && v.hora_fin) {
+                                        const diff = new Date(v.hora_fin) - new Date(v.hora_visita);
+                                        if (diff > 0) {
+                                            const hh = String(Math.floor(diff / 3600000)).padStart(2,'0');
+                                            const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+                                            duracion = hh + ':' + mm;
+                                        }
+                                    }
+                                    return `<tr>
+                                        <td>${escHtml(v.vendedor)}</td>
+                                        <td>${escHtml(v.cliente)}</td>
+                                        <td>${escHtml(v.tipo_visita||'—')}</td>
+                                        <td>${escHtml(v.estado_cliente||'—')}</td>
+                                        <td>${escHtml(v.contacto_nombre||'—')}</td>
+                                        <td>${escHtml(v.contacto_puesto||'—')}</td>
+                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.objetivo||'')}">${escHtml(v.objetivo||'—')}</td>
+                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${escHtml((v.hora_visita||'').replace('T',' ').slice(0,16))}</td>
+                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${v.hora_fin ? escHtml(v.hora_fin.replace('T',' ').slice(0,16)) : '—'}</td>
+                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem;text-align:center"><span class="badge ${v.hora_fin ? 'badge-green' : ''}" style="${!v.hora_fin ? 'color:var(--text-dim)' : ''}">${duracion}</span></td>
+                                        <td><span class="badge ${badgeEstatus}">${escHtml(v.estatus||'—')}</span></td>
+                                        <td><span class="${v.resultado ? 'badge ' + badgeResultado : ''}">${escHtml(v.resultado||'—')}</span></td>
+                                        <td style="text-align:center">${stars}</td>
+                                        <td><span class="${v.prob_cierre ? 'badge ' + badgeProb : ''}">${escHtml(v.prob_cierre||'—')}</span></td>
+                                        <td>${escHtml(v.competencia||'—')}</td>
+                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.productos_tratados||'')}">${escHtml(v.productos_tratados||'—')}</td>
+                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.proxima_accion||'')}">${escHtml(v.proxima_accion||'—')}</td>
+                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${escHtml(v.fecha_compromiso||'—')}</td>
+                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.disparadores||'')}">${escHtml(v.disparadores||'—')}</td>
+                                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.conclusiones||'')}">${escHtml(v.conclusiones||'—')}</td>
+                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.ubicacion||'')}">${escHtml(v.ubicacion||'—')}</td>
+                                    </tr>`;}).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+
+            } catch(e) { showError('resultado-consulta', 'No se pudieron cargar las visitas: ' + e.message); }
+        }
+
+        // ── CONSULTAR VENDEDORES CRUD ────────────────────────────────
+        async function consultarVendedores() {
+            showLoading('resultado-consulta');
+            try {
+                const data = await sbFetch('vendedores?select=*&order=id.asc');
+                renderVendedores(data);
+            } catch(e) { showError('resultado-consulta', 'No se pudieron cargar los vendedores: ' + e.message); }
+        }
+
+        function renderVendedores(data) {
+            const rows = data.map((v) => `
+                <tr id="vrow-${v.id}">
+                    <td style="color:var(--text-muted);font-family:'DM Mono',monospace;white-space:nowrap">${v.id}</td>
+                    <td style="font-family:'DM Mono',monospace" id="vprov-${v.id}">${escHtml(v.proveedor||'—')}</td>
+                    <td id="vnombre-${v.id}">${escHtml(v.nombre)}</td>
+                    <td style="font-family:'DM Mono',monospace;text-align:center" id="vplan-${v.id}">${v.visitas_planeadas ?? 15}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn-icon btn-icon-edit" onclick="editVendedor(${v.id}, '${escHtml(v.proveedor||'')}', '${escHtml(v.nombre)}', ${v.visitas_planeadas??15})">✏️ Editar</button>
+                            <button class="btn-icon btn-icon-del" onclick="deleteVendedor(${v.id}, '${escHtml(v.nombre)}')">🗑 Borrar</button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+
+            document.getElementById('resultado-consulta').innerHTML = `
+                <div class="crud-wrap">
+                    <div class="crud-toolbar">
+                        <span class="crud-toolbar-title">Vendedores</span>
+                        <span style="font-size:0.75rem;color:var(--text-muted)">${data.length} registros</span>
+                    </div>
+                    <div class="table-wrap" style="border:none;border-radius:0">
+                        <table class="result-table">
+                            <thead><tr><th>ID</th><th>Proveedor</th><th>Nombre</th><th>Visitas Planeadas</th><th>Acciones</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                    <div class="new-row-form">
+                        <input type="text" id="new-v-proveedor" placeholder="Núm. Proveedor" style="max-width:140px" />
+                        <input type="text" id="new-v-nombre" placeholder="Nombre del vendedor" />
+                        <input type="number" id="new-v-plan" placeholder="Visitas planeadas" min="1" style="max-width:140px" />
+                        <button class="btn btn-primary" style="flex:none" onclick="addVendedor()">+ Agregar</button>
+                    </div>
+                </div>`;
+        }
+
+        function editVendedor(id, proveedor, nombre, plan) {
+            const row = document.getElementById('vrow-' + id);
+            row.innerHTML = `
+                <td style="color:var(--text-muted);font-family:'DM Mono',monospace">${id}</td>
+                <td><input class="cell-input" id="edit-v-prov-${id}" value="${escHtml(proveedor)}" style="max-width:120px" /></td>
+                <td><input class="cell-input" id="edit-v-nombre-${id}" value="${escHtml(nombre)}" /></td>
+                <td><input class="cell-input" id="edit-v-plan-${id}" type="number" value="${plan}" style="max-width:80px" /></td>
+                <td>
+                    <div class="row-actions">
+                        <button class="btn-icon btn-icon-save" onclick="saveVendedor(${id})">✓ Guardar</button>
+                        <button class="btn-icon btn-icon-del" onclick="consultarVendedores()">✕ Cancelar</button>
+                    </div>
+                </td>`;
+        }
+
+        async function saveVendedor(id) {
+            const proveedor = document.getElementById('edit-v-prov-' + id).value.trim();
+            const nombre    = document.getElementById('edit-v-nombre-' + id).value.trim();
+            const plan      = parseInt(document.getElementById('edit-v-plan-' + id).value) || 15;
+            if (!nombre) { alert('El nombre no puede estar vacío.'); return; }
+            try {
+                await sbFetch('vendedores?id=eq.' + id, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ proveedor: proveedor || null, nombre, visitas_planeadas: plan }),
+                    prefer: 'return=minimal'
+                });
+                showToast('Vendedor actualizado');
+                consultarVendedores();
+                cargarSelects();
+            } catch(e) { showToast('Error: ' + e.message, true); }
+        }
+
+        async function deleteVendedor(id, nombre) {
+            if (!confirm('¿Borrar al vendedor "' + nombre + '"? Esta acción no se puede deshacer.')) return;
+            try {
+                await sbFetch('vendedores?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+                showToast('Vendedor eliminado');
+                consultarVendedores();
+                cargarSelects();
+            } catch(e) { showToast('Error: ' + e.message, true); }
+        }
+
+        async function addVendedor() {
+            const proveedor = document.getElementById('new-v-proveedor').value.trim();
+            const nombre    = document.getElementById('new-v-nombre').value.trim();
+            const plan      = parseInt(document.getElementById('new-v-plan').value) || 15;
+            if (!nombre) { alert('Escribe el nombre del vendedor.'); return; }
+            try {
+                await sbFetch('vendedores', {
+                    method: 'POST',
+                    body: JSON.stringify({ proveedor: proveedor || null, nombre, visitas_planeadas: plan })
+                });
+                showToast('Vendedor agregado');
+                consultarVendedores();
+                cargarSelects();
+            } catch(e) { showToast('Error: ' + e.message, true); }
+        }
+
+        // ── CONSULTAR VENDEDORES-CLIENTES CRUD ──────────────────────
+        async function consultarVendedoresClientes() {
+            showLoading('resultado-consulta');
+            try {
+                const data = await sbFetch('vendedores_clientes?select=*&order=id.asc');
+                renderVendedoresClientes(data);
+            } catch(e) { showError('resultado-consulta', 'No se pudo cargar Vendedores-Clientes: ' + e.message); }
+        }
+
+        function renderVendedoresClientes(data) {
+            const rows = data.map(r => `
+                <tr id="vcrow-${r.id}">
+                    <td style="font-family:'DM Mono',monospace;color:var(--text-muted)">${r.id}</td>
+                    <td style="font-family:'DM Mono',monospace">${escHtml(r.vendedor||'—')}</td>
+                    <td style="font-weight:500">${escHtml(r.nombre_vendedor||'—')}</td>
+                    <td style="font-family:'DM Mono',monospace">${escHtml(r.cliente||'—')}</td>
+                    <td>${escHtml(r.nombre_cliente||'—')}</td>
+                    <td style="font-family:'DM Mono',monospace;text-align:center">${escHtml(r.org_ventas||'—')}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn-icon btn-icon-edit" onclick="editVC(${r.id}, '${escHtml(r.vendedor||'')}', '${escHtml(r.nombre_vendedor||'')}', '${escHtml(r.cliente||'')}', '${escHtml(r.nombre_cliente||'')}', '${escHtml(r.org_ventas||'')}')">✏️ Editar</button>
+                            <button class="btn-icon btn-icon-del" onclick="deleteVC(${r.id}, '${escHtml(r.nombre_vendedor||'')}', '${escHtml(r.nombre_cliente||'')}')">🗑 Borrar</button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+
+            document.getElementById('resultado-consulta').innerHTML = `
+                <div class="crud-wrap">
+                    <div class="crud-toolbar">
+                        <span class="crud-toolbar-title">Vendedores – Clientes</span>
+                        <span style="font-size:0.75rem;color:var(--text-muted)">${data.length} registros</span>
+                    </div>
+                    <div class="table-wrap" style="border:none;border-radius:0">
+                        <table class="result-table">
+                            <thead><tr><th>ID</th><th>Vendedor</th><th>Nombre Vendedor</th><th>Cliente</th><th>Nombre Cliente</th><th>Org. Ventas</th><th>Acciones</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                    <div class="new-row-form">
+                        <input type="text" id="new-vc-vendedor" placeholder="Núm. Vendedor" style="max-width:120px" />
+                        <input type="text" id="new-vc-nombre-vendedor" placeholder="Nombre vendedor" />
+                        <input type="text" id="new-vc-cliente" placeholder="Núm. Cliente" style="max-width:120px" />
+                        <input type="text" id="new-vc-nombre-cliente" placeholder="Nombre cliente" />
+                        <input type="text" id="new-vc-org-ventas" placeholder="Org. Ventas" style="max-width:100px" />
+                        <button class="btn btn-primary" style="flex:none" onclick="addVC()">+ Agregar</button>
+                    </div>
+                </div>`;
+        }
+
+        function editVC(id, vendedor, nombreVendedor, cliente, nombreCliente, orgVentas) {
+            const row = document.getElementById('vcrow-' + id);
+            row.innerHTML = `
+                <td style="font-family:'DM Mono',monospace;color:var(--text-muted)">${id}</td>
+                <td><input class="cell-input" id="edit-vc-v-${id}" value="${escHtml(vendedor)}" style="max-width:100px" /></td>
+                <td><input class="cell-input" id="edit-vc-nv-${id}" value="${escHtml(nombreVendedor)}" /></td>
+                <td><input class="cell-input" id="edit-vc-c-${id}" value="${escHtml(cliente)}" style="max-width:100px" /></td>
+                <td><input class="cell-input" id="edit-vc-nc-${id}" value="${escHtml(nombreCliente)}" /></td>
+                <td><input class="cell-input" id="edit-vc-org-${id}" value="${escHtml(orgVentas)}" style="max-width:80px" /></td>
+                <td>
+                    <div class="row-actions">
+                        <button class="btn-icon btn-icon-save" onclick="saveVC(${id})">✓ Guardar</button>
+                        <button class="btn-icon btn-icon-del" onclick="consultarVendedoresClientes()">✕ Cancelar</button>
+                    </div>
+                </td>`;
+        }
+
+        async function saveVC(id) {
+            const vendedor       = document.getElementById('edit-vc-v-' + id).value.trim();
+            const nombreVendedor = document.getElementById('edit-vc-nv-' + id).value.trim();
+            const cliente        = document.getElementById('edit-vc-c-' + id).value.trim();
+            const nombreCliente  = document.getElementById('edit-vc-nc-' + id).value.trim();
+            const orgVentas      = document.getElementById('edit-vc-org-' + id).value.trim();
+            if (!vendedor || !cliente) { alert('El número de vendedor y cliente son obligatorios.'); return; }
+            try {
+                await sbFetch('vendedores_clientes?id=eq.' + id, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ vendedor, nombre_vendedor: nombreVendedor, cliente, nombre_cliente: nombreCliente, org_ventas: orgVentas || null }),
+                    prefer: 'return=minimal'
+                });
+                showToast('Registro actualizado');
+                consultarVendedoresClientes();
+            } catch(e) { showToast('Error: ' + e.message, true); }
+        }
+
+        async function deleteVC(id, nombreVendedor, nombreCliente) {
+            if (!confirm('¿Borrar la relación "' + nombreVendedor + ' → ' + nombreCliente + '"?')) return;
+            try {
+                await sbFetch('vendedores_clientes?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+                showToast('Registro eliminado');
+                consultarVendedoresClientes();
+            } catch(e) { showToast('Error: ' + e.message, true); }
+        }
+
+        async function addVC() {
+            const vendedor       = document.getElementById('new-vc-vendedor').value.trim();
+            const nombreVendedor = document.getElementById('new-vc-nombre-vendedor').value.trim();
+            const cliente        = document.getElementById('new-vc-cliente').value.trim();
+            const nombreCliente  = document.getElementById('new-vc-nombre-cliente').value.trim();
+            const orgVentas      = document.getElementById('new-vc-org-ventas').value.trim();
+            if (!vendedor || !cliente) { alert('El número de vendedor y cliente son obligatorios.'); return; }
+            try {
+                await sbFetch('vendedores_clientes', {
+                    method: 'POST',
+                    body: JSON.stringify({ vendedor, nombre_vendedor: nombreVendedor, cliente, nombre_cliente: nombreCliente, org_ventas: orgVentas || null })
+                });
+                showToast('Relación agregada');
+                consultarVendedoresClientes();
+            } catch(e) { showToast('Error: ' + e.message, true); }
+        }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ── KPI (combina Supabase + local) ───────────────────────────
+        async function actualizarKPI() {
+            // Intentar traer visitas frescas de Supabase para el KPI
+            try {
+                const data = await sbFetch('visitas?select=vendedor,estatus');
+                visitas = data;
+            } catch(e) { /* usar visitas locales si falla */ }
+
+            const total      = visitas.filter(v => v.estatus === 'Cerrada').length;
+            const enProceso  = visitas.filter(v => v.estatus === 'En Proceso').length;
+            const noValidas  = visitas.filter(v => v.estatus === 'Visita No Válida').length;
+            const nombresVendedores = new Set(vendedoresLocal.map(v => v.nombre));
+            const visitasLibres = visitas.filter(v => v.estatus === 'Cerrada' && !nombresVendedores.has(v.vendedor)).length;
+            const cumplidos = vendedoresLocal.filter(v =>
+                (visitas.filter(vi => vi.vendedor === v.nombre && vi.estatus === 'Cerrada').length / (v.visitas_planeadas || 10)) >= 0.8
+            ).length;
+
+            document.getElementById('kpi-summary').innerHTML = `
+                <div class="kpi-mini">
+                    <div class="kpi-mini-label">Visitas Cerradas</div>
+                    <div class="kpi-mini-value">${total}</div>
+                    <div class="kpi-mini-sub">cuentan para el incentivo</div>
+                </div>
+                <div class="kpi-mini">
+                    <div class="kpi-mini-label">En Proceso</div>
+                    <div class="kpi-mini-value" style="color:var(--warning)">${enProceso}</div>
+                    <div class="kpi-mini-sub">abiertas ahora</div>
+                </div>
+                <div class="kpi-mini">
+                    <div class="kpi-mini-label">No Válidas</div>
+                    <div class="kpi-mini-value" style="color:var(--danger)">${noValidas}</div>
+                    <div class="kpi-mini-sub">sin cierre en campo</div>
+                </div>
+                <div class="kpi-mini">
+                    <div class="kpi-mini-label">En Objetivo</div>
+                    <div class="kpi-mini-value" style="color:var(--success)">${cumplidos}</div>
+                    <div class="kpi-mini-sub">≥ 80% cumplimiento</div>
+                </div>
+                <div class="kpi-mini">
+                    <div class="kpi-mini-label">Ger. / Supervisor</div>
+                    <div class="kpi-mini-value" style="color:var(--warning)">${visitasLibres}</div>
+                    <div class="kpi-mini-sub">visitas cerradas</div>
+                </div>`;
+
+            const tbody = document.getElementById("tablaKPI");
+            tbody.innerHTML = '';
+            vendedoresLocal.forEach(v => {
+                const realizadas = visitas.filter(vi => vi.vendedor === v.nombre && vi.estatus === 'Cerrada').length;
+                const invalidas  = visitas.filter(vi => vi.vendedor === v.nombre && vi.estatus === 'Visita No Válida').length;
+                const planeadas  = v.visitas_planeadas || 10;
+                const pct        = (realizadas / planeadas) * 100;
+                const badgeClass = pct >= 80 ? 'badge-green' : pct >= 50 ? 'badge-yellow' : 'badge-red';
+                const barColor   = pct >= 80 ? 'var(--success)' : pct >= 50 ? 'var(--warning)' : 'var(--danger)';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight:500">${escHtml(v.nombre)}</td>
+                    <td style="font-family:'DM Mono',monospace">${planeadas}</td>
+                    <td style="font-family:'DM Mono',monospace">${realizadas}</td>
+                    <td style="font-family:'DM Mono',monospace"><span class="${invalidas > 0 ? 'badge badge-red' : ''}">${invalidas > 0 ? invalidas : '—'}</span></td>
+                    <td><span class="badge ${badgeClass}">${pct.toFixed(1)}%</span></td>
+                    <td style="min-width:120px">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width:${Math.min(pct,100)}%;background:${barColor}"></div>
+                        </div>
+                    </td>`;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ── TOGGLE VISTA KPI ─────────────────────────────────────────
+        let graficaKPIInstance = null;
+
+        function toggleKPIView(modo) {
+            const tablaView   = document.getElementById('kpi-tabla-view');
+            const graficaView = document.getElementById('kpi-grafica-view');
+            const btnTabla    = document.getElementById('btnVerTabla');
+            const btnGrafica  = document.getElementById('btnVerGrafica');
+
+            if (modo === 'grafica') {
+                tablaView.style.display   = 'none';
+                graficaView.style.display = 'block';
+                btnGrafica.style.background = 'var(--accent)';
+                btnGrafica.style.color      = 'white';
+                btnGrafica.style.borderColor = 'var(--accent)';
+                btnTabla.style.background   = '';
+                btnTabla.style.color        = '';
+                btnTabla.style.borderColor  = '';
+                renderGraficaKPI();
+            } else {
+                tablaView.style.display   = 'block';
+                graficaView.style.display = 'none';
+                btnTabla.style.background = 'var(--accent)';
+                btnTabla.style.color      = 'white';
+                btnTabla.style.borderColor = 'var(--accent)';
+                btnGrafica.style.background = '';
+                btnGrafica.style.color      = '';
+                btnGrafica.style.borderColor = '';
+            }
+        }
+
+        function renderGraficaKPI() {
+            if (graficaKPIInstance) {
+                graficaKPIInstance.destroy();
+                graficaKPIInstance = null;
+            }
+
+            const labels    = [];
+            const realizadas = [];
+            const planeadas  = [];
+            const colores    = [];
+
+            vendedoresLocal.forEach(v => {
+                const real = visitas.filter(vi => vi.vendedor === v.nombre && vi.estatus === 'Cerrada').length;
+                const plan = v.visitas_planeadas || 15;
+                const pct  = (real / plan) * 100;
+                // Nombre corto: primero y apellido
+                const partes = v.nombre.trim().split(' ');
+                const nombreCorto = partes[0] + ' ' + (partes[1] || '');
+                labels.push(nombreCorto);
+                realizadas.push(real);
+                planeadas.push(plan);
+                colores.push(
+                    pct >= 80 ? 'rgba(16,185,129,0.85)' :
+                    pct >= 50 ? 'rgba(245,158,11,0.85)' :
+                                'rgba(239,68,68,0.85)'
+                );
+            });
+
+            const ctx = document.getElementById('graficaKPI').getContext('2d');
+            graficaKPIInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Visitas Realizadas',
+                            data: realizadas,
+                            backgroundColor: colores,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        },
+                        {
+                            label: 'Meta (Planeadas)',
+                            data: planeadas,
+                            backgroundColor: 'rgba(59,130,246,0.15)',
+                            borderColor: 'rgba(59,130,246,0.5)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            type: 'bar',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e6edf3', font: { family: 'Sora', size: 12 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: (ctx) => {
+                                    if (ctx.datasetIndex === 0) {
+                                        const plan = planeadas[ctx.dataIndex];
+                                        const pct  = ((ctx.raw / plan) * 100).toFixed(1);
+                                        return `Cumplimiento: ${pct}%`;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#7d8590', font: { family: 'Sora', size: 11 }, maxRotation: 45 },
+                            grid:  { color: 'rgba(42,52,65,0.6)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: Math.max(...planeadas) + 2,
+                            ticks: { color: '#7d8590', font: { family: 'Sora', size: 11 }, stepSize: 1 },
+                            grid:  { color: 'rgba(42,52,65,0.6)' }
+                        }
+                    }
+                }
+            });
+        }
+        function grabarVozCampo(campoId, btnId) {
+            const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechAPI) {
+                alert('Tu navegador no soporta grabación de voz. En iPhone usa Safari, en Android usa Chrome.');
+                return;
+            }
+            const btn = document.getElementById(btnId);
+            if (!grabando) {
+                reconocimiento = new SpeechAPI();
+                reconocimiento.lang = 'es-MX';
+                reconocimiento.interimResults = false;
+                reconocimiento.maxAlternatives = 1;
+                reconocimiento.continuous = false;
+                try {
+                    reconocimiento.start();
+                } catch(e) {
+                    alert('No se pudo iniciar el micrófono. Verifica los permisos en Configuración > Safari > Micrófono.');
+                    return;
+                }
+                grabando = true;
+                btn.textContent = '⏹ Detener';
+                btn.classList.add('recording');
+                reconocimiento.onresult = e => {
+                    const texto = Array.from(e.results).map(r => r[0].transcript).join(' ');
+                    document.getElementById(campoId).value = texto;
+                };
+                reconocimiento.onerror = e => {
+                    grabando = false;
+                    btn.textContent = '🎙 Grabar Voz';
+                    btn.classList.remove('recording');
+                    if (e.error === 'not-allowed') {
+                        alert('Permiso de micrófono denegado. Ve a Configuración > Safari > Micrófono y permite el acceso.');
+                    } else if (e.error !== 'no-speech') {
+                        alert('Error al grabar: ' + e.error);
+                    }
+                };
+                reconocimiento.onend = () => {
+                    grabando = false;
+                    btn.textContent = '🎙 Grabar Voz';
+                    btn.classList.remove('recording');
+                };
+            } else {
+                reconocimiento.stop();
+                grabando = false;
+                btn.textContent = '🎙 Grabar Voz';
+                btn.classList.remove('recording');
+            }
+        }
+
+        // Acceso directo para conclusiones (mantiene compatibilidad)
+        function grabarVoz() { grabarVozCampo('conclusiones', 'grabarBtn'); }
+
+        // ── INIT ─────────────────────────────────────────────────────
+        window.onload = async function() {
+            // FIX: Mostrar PIN inmediatamente antes de cargar datos
+            document.getElementById('pin-screen').classList.add('show');
+
+            // Mostrar bottom nav en móvil
+            if (window.innerWidth <= 640) {
+                document.getElementById('bottom-nav-bar').style.display = 'block';
+            }
+            await cargarSelects();
+            await actualizarKPI();
+        };
+    </script>
+
+    <script>
+        // ── SERVICE WORKER ───────────────────────────────────────────
+        if ('serviceWorker' in navigator) {
+            // Limpiar todos los service workers y cachés viejos
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                regs.forEach(r => r.unregister());
+            });
+            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+
+            // Registrar SW nuevo
+            const swCode = `
+const CACHE = 'visitas-v3';
+self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => {
+    e.waitUntil(
+        caches.keys().then(keys => Promise.all(
+            keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+        )).then(() => clients.claim())
+    );
+});
+self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
+`;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl, { scope: '/' })
+                .then(() => console.log('SW v3 registrado'))
+                .catch(e => console.warn('SW error:', e));
+        }
+    </script>
+</body>
+</html>
