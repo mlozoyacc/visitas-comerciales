@@ -333,9 +333,6 @@
             border-right: 1px solid var(--border);
         }
         .visitas-scroll-wrap thead th:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 20;
             background: var(--surface2);
         }
         .visitas-scroll-wrap tbody td {
@@ -346,9 +343,6 @@
             vertical-align: middle;
         }
         .visitas-scroll-wrap tbody td:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 5;
             background: var(--surface);
             font-weight: 600;
             border-right: 2px solid var(--border);
@@ -867,7 +861,7 @@
         <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
             <div class="form-group">
                 <label>PIN de Acceso</label>
-                <input type="tel" id="pin-libre-pin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="0000" style="letter-spacing:0.3em;font-size:1.2rem;text-align:center;-webkit-text-security:disc" oninput="this.value=this.value.replace(/[^0-9]/g,'')"/>
+                <input type="number" id="pin-libre-pin" min="0" max="9999" placeholder="PIN" style="letter-spacing:0.3em;font-size:1.4rem;text-align:center;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:Sora,sans-serif;padding:12px;outline:none" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"/>
             </div>
             <div class="form-group">
                 <label>Tu Nombre Completo</label>
@@ -1354,7 +1348,12 @@
         function mostrarModoLibre() {
             document.getElementById('pin-screen').classList.remove('show');
             document.getElementById('pin-libre-screen').style.display = 'flex';
-            setTimeout(() => document.getElementById('pin-libre-pin').focus(), 300);
+            // Forzar foco y teclado en móvil
+            setTimeout(() => {
+                const el = document.getElementById('pin-libre-pin');
+                el.focus();
+                el.click();
+            }, 400);
         }
 
         function volverAlPin() {
@@ -1366,7 +1365,7 @@
         }
 
         function validarPinLibre() {
-            const pin    = document.getElementById('pin-libre-pin').value.trim();
+            const pin    = String(document.getElementById('pin-libre-pin').value).trim().padStart(4, '0').slice(-4);
             const nombre = document.getElementById('pin-libre-nombre').value.trim();
 
             if (!pin || !nombre) {
