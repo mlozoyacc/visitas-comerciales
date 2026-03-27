@@ -306,7 +306,7 @@
         .visitas-scroll-wrap {
             overflow: auto;
             -webkit-overflow-scrolling: touch;
-            max-height: calc(100vh - 260px);
+            max-height: calc(100vh - 220px);
             border: 1px solid var(--border);
             border-radius: 10px;
         }
@@ -345,10 +345,11 @@
         .visitas-scroll-wrap tbody td:first-child {
             background: var(--surface);
             font-weight: 600;
-            border-right: 2px solid var(--border);
         }
         .visitas-scroll-wrap tbody tr:last-child td { border-bottom: none; }
         .visitas-scroll-wrap tbody tr:hover td { background: rgba(59,130,246,0.06); }
+
+
         .visitas-scroll-wrap tbody tr:hover td:first-child { background: rgba(59,130,246,0.1); }
             display: flex;
             gap: 10px;
@@ -1036,110 +1037,97 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Resultado de la Visita</label>
-                        <select id="resultado">
-                            <option value="">Selecciona el resultado</option>
-                            <option value="Exitosa">Exitosa</option>
-                            <option value="Sin acuerdo">Sin acuerdo</option>
-                            <option value="Requiere seguimiento">Requiere seguimiento</option>
-                            <option value="Cancelada por cliente">Cancelada por cliente</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Probabilidad de Cierre</label>
-                        <select id="prob-cierre">
-                            <option value="">Selecciona</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Media">Media</option>
-                            <option value="Baja">Baja</option>
-                            <option value="N/A">N/A</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Nivel de Satisfacción del Cliente</label>
-                        <select id="satisfaccion">
-                            <option value="">Selecciona</option>
-                            <option value="5">⭐⭐⭐⭐⭐ Muy satisfecho</option>
-                            <option value="4">⭐⭐⭐⭐ Satisfecho</option>
-                            <option value="3">⭐⭐⭐ Neutral</option>
-                            <option value="2">⭐⭐ Insatisfecho</option>
-                            <option value="1">⭐ Muy insatisfecho</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Competencia Mencionada</label>
-                        <textarea id="competencia" placeholder="¿Qué competidor mencionó el cliente?" rows="2" style="min-height:72px;resize:none"></textarea>
-                        <div class="btn-actions">
-                            <button class="btn btn-danger" id="grabarBtnCompetencia" onclick="grabarVozCampo('competencia', 'grabarBtnCompetencia')">
-                                🎙 Grabar Voz
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Productos / Servicios Tratados</label>
-                        <textarea id="productos-tratados" placeholder="Ej. Producto A, Servicio B, Línea C" rows="2" style="min-height:72px;resize:none"></textarea>
-                        <div class="btn-actions">
-                            <button class="btn btn-danger" id="grabarBtnProductos" onclick="grabarVozCampo('productos-tratados', 'grabarBtnProductos')">
-                                🎙 Grabar Voz
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Próxima Acción</label>
-                        <textarea id="proxima-accion" placeholder="¿Cuál es el siguiente paso?" rows="2" style="min-height:72px;resize:none"></textarea>
-                        <div class="btn-actions">
-                            <button class="btn btn-danger" id="grabarBtnAccion" onclick="grabarVozCampo('proxima-accion', 'grabarBtnAccion')">
-                                🎙 Grabar Voz
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Fecha Compromiso</label>
-                        <input type="date" id="fecha-compromiso" />
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Disparadores por Área <span style="font-weight:400;color:var(--text-muted)">(selecciona todas las que apliquen)</span></label>
-                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
-                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
-                                <input type="checkbox" id="disp-logistica" style="accent-color:var(--accent);width:16px;height:16px"> 🚚 Logística / Embarques
-                            </label>
-                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
-                                <input type="checkbox" id="disp-supply" style="accent-color:var(--accent);width:16px;height:16px"> 📦 Supply Chain / Programación
-                            </label>
-                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
-                                <input type="checkbox" id="disp-creditos" style="accent-color:var(--accent);width:16px;height:16px"> 💳 Créditos / Cobranza
-                            </label>
-                            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">
-                                <input type="checkbox" id="disp-direccion" style="accent-color:var(--accent);width:16px;height:16px"> 📊 Dirección Comercial
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Resumen / Conclusiones</label>
-                        <textarea id="conclusiones" placeholder="Escribe las conclusiones de la visita..."></textarea>
-                        <div class="btn-actions">
-                            <button class="btn btn-danger" id="grabarBtn" onclick="grabarVoz()">
-                                🎙 Grabar Voz
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
+            </div>
 
-                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
-                    <button class="btn btn-primary" style="background: var(--success);" onclick="cerrarVisita()">
-                        ✓ &nbsp;Cerrar Visita
+            <!-- PASO 1: Productos -->
+            <div class="card">
+                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">1 · ¿Qué producto compra el cliente?</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <label id="btn-galvanizada" onclick="toggleProducto('galvanizada')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
+                        <input type="checkbox" id="prod-galvanizada" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Lámina Galvanizada
+                    </label>
+                    <label id="btn-negra" onclick="toggleProducto('negra')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
+                        <input type="checkbox" id="prod-negra" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Lámina Negra
+                    </label>
+                    <label id="btn-tuberia" onclick="toggleProducto('tuberia')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
+                        <input type="checkbox" id="prod-tuberia" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Tubería
+                    </label>
+                    <label id="btn-perfiles" onclick="toggleProducto('perfiles')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
+                        <input type="checkbox" id="prod-perfiles" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Perfiles
+                    </label>
+                </div>
+            </div>
+
+            <!-- PASO 2: ¿Nos considera proveedor? -->
+            <div class="card">
+                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">2 · ¿Nos considera como proveedor?</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <button id="btn-proveedor-si" onclick="seleccionarProveedor('si')" style="padding:18px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.15s">
+                        ✅ SÍ
+                    </button>
+                    <button id="btn-proveedor-no" onclick="seleccionarProveedor('no')" style="padding:18px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.15s">
+                        ❌ NO
                     </button>
                 </div>
+                <div id="razon-no-proveedor" style="margin-top:14px">
+                    <div class="form-group">
+                        <label id="razon-no-label">Comentarios de la visita con el proveedor</label>
+                        <textarea id="razon-no" placeholder="Escribe o graba tus comentarios..." rows="3" style="resize:none"></textarea>
+                        <div class="btn-actions">
+                            <button class="btn btn-danger" id="grabarBtnRazon" onclick="grabarVozCampo('razon-no', 'grabarBtnRazon')">🎙 Grabar Voz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 3: Resultado -->
+            <div class="card">
+                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">3 · Resultado de la visita</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <button id="btn-res-exitosa" onclick="seleccionarResultado('Exitosa')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
+                        🟢 Exitosa
+                    </button>
+                    <button id="btn-res-seguimiento" onclick="seleccionarResultado('Requiere seguimiento')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
+                        🟡 Seguimiento
+                    </button>
+                    <button id="btn-res-sinacuerdo" onclick="seleccionarResultado('Sin acuerdo')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
+                        🔴 Sin acuerdo
+                    </button>
+                    <button id="btn-res-cancelada" onclick="seleccionarResultado('Cancelada por cliente')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
+                        ⚫ Cancelada
+                    </button>
+                </div>
+                <input type="hidden" id="resultado" value="" />
+            </div>
+
+            <!-- PASO 4: Conclusiones -->
+            <div class="card">
+                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">4 · Conclusiones</div>
+                <div class="form-group">
+                    <textarea id="conclusiones" placeholder="¿Qué pasó en la visita? Habla o escribe..." style="min-height:100px;resize:none"></textarea>
+                    <div class="btn-actions">
+                        <button class="btn btn-danger" id="grabarBtn" onclick="grabarVoz()">🎙 Grabar Voz</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campos ocultos para compatibilidad con cerrarVisita() -->
+            <input type="hidden" id="prob-cierre" value="" />
+            <input type="hidden" id="satisfaccion" value="" />
+            <input type="hidden" id="competencia" value="" />
+            <input type="hidden" id="productos-tratados" value="" />
+            <input type="hidden" id="proxima-accion" value="" />
+            <input type="hidden" id="fecha-compromiso" value="" />
+            <input type="hidden" id="disp-logistica" value="" />
+            <input type="hidden" id="disp-supply" value="" />
+            <input type="hidden" id="disp-creditos" value="" />
+            <input type="hidden" id="disp-direccion" value="" />
+
+            <div style="padding: 0 0 24px">
+                <button class="btn btn-primary" style="background:var(--success);width:100%;justify-content:center;font-size:1rem;padding:16px" onclick="cerrarVisita()">
+                    ✓ &nbsp;Cerrar Visita
+                </button>
             </div>
         </div>
 
@@ -1866,30 +1854,147 @@
             }
         }
 
+        // ── HELPERS NUEVO FORMULARIO CERRAR ─────────────────────────
+        let resultadoSeleccionado = '';
+        let proveedorSeleccionado = '';
+
+        function toggleProducto(id) {
+            const cb  = document.getElementById('prod-' + id);
+            const btn = document.getElementById('btn-' + id);
+            cb.checked = !cb.checked;
+            btn.style.borderColor  = cb.checked ? 'var(--accent)' : 'var(--border)';
+            btn.style.background   = cb.checked ? 'rgba(59,130,246,0.12)' : 'var(--surface2)';
+        }
+
+        function seleccionarProveedor(val) {
+            proveedorSeleccionado = val;
+            const si    = document.getElementById('btn-proveedor-si');
+            const no    = document.getElementById('btn-proveedor-no');
+            const label = document.getElementById('razon-no-label');
+            if (val === 'si') {
+                si.style.background  = 'rgba(16,185,129,0.2)';
+                si.style.borderColor = 'var(--success)';
+                si.style.color       = 'var(--success)';
+                no.style.background  = 'var(--surface2)';
+                no.style.borderColor = 'var(--border)';
+                no.style.color       = 'var(--text)';
+                if (label) label.textContent = 'Comentarios de la visita con el proveedor';
+            } else {
+                no.style.background  = 'rgba(239,68,68,0.2)';
+                no.style.borderColor = 'var(--danger)';
+                no.style.color       = 'var(--danger)';
+                si.style.background  = 'var(--surface2)';
+                si.style.borderColor = 'var(--border)';
+                si.style.color       = 'var(--text)';
+                if (label) label.textContent = '¿Por qué no nos considera como proveedor? *';
+            }
+        }
+
+        function seleccionarResultado(val) {
+            resultadoSeleccionado = val;
+            document.getElementById('resultado').value = val;
+            const map = {
+                'Exitosa':               'btn-res-exitosa',
+                'Requiere seguimiento':  'btn-res-seguimiento',
+                'Sin acuerdo':           'btn-res-sinacuerdo',
+                'Cancelada por cliente': 'btn-res-cancelada'
+            };
+            const colors = {
+                'Exitosa':               ['rgba(16,185,129,0.2)', 'var(--success)'],
+                'Requiere seguimiento':  ['rgba(245,158,11,0.2)',  'var(--warning)'],
+                'Sin acuerdo':           ['rgba(239,68,68,0.2)',   'var(--danger)'],
+                'Cancelada por cliente': ['rgba(100,100,100,0.2)', '#888']
+            };
+            Object.entries(map).forEach(([k, btnId]) => {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                if (k === val) {
+                    btn.style.background  = colors[k][0];
+                    btn.style.borderColor = colors[k][1];
+                    btn.style.color       = colors[k][1];
+                } else {
+                    btn.style.background  = 'var(--surface2)';
+                    btn.style.borderColor = 'var(--border)';
+                    btn.style.color       = 'var(--text)';
+                }
+            });
+        }
+
+        function limpiarFormularioCerrar() {
+            // Reset productos
+            ['galvanizada','negra','tuberia','perfiles'].forEach(id => {
+                const cb  = document.getElementById('prod-' + id);
+                const btn = document.getElementById('btn-' + id);
+                if (cb) cb.checked = false;
+                if (btn) { btn.style.borderColor = 'var(--border)'; btn.style.background = 'var(--surface2)'; }
+            });
+            // Reset proveedor
+            proveedorSeleccionado = '';
+            ['btn-proveedor-si','btn-proveedor-no'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) { btn.style.background = 'var(--surface2)'; btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text)'; }
+            });
+            document.getElementById('razon-no-label') && (document.getElementById('razon-no-label').textContent = 'Comentarios de la visita con el proveedor');
+            document.getElementById('razon-no') && (document.getElementById('razon-no').value = '');
+            // Reset resultado
+            resultadoSeleccionado = '';
+            document.getElementById('resultado').value = '';
+            ['btn-res-exitosa','btn-res-seguimiento','btn-res-sinacuerdo','btn-res-cancelada'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) { btn.style.background = 'var(--surface2)'; btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text)'; }
+            });
+            // Reset conclusiones
+            document.getElementById('conclusiones').value = '';
+        }
+
         // ── CERRAR VISITA (PATCH estatus + conclusiones + hora_fin + nuevos campos) ──
         async function cerrarVisita() {
-            const visitaId          = document.getElementById('cerrar-visita').value;
-            const conclusiones      = document.getElementById('conclusiones').value.trim();
-            const resultado         = document.getElementById('resultado').value;
-            const probCierre        = document.getElementById('prob-cierre').value;
-            const satisfaccion      = document.getElementById('satisfaccion').value;
-            const competencia       = document.getElementById('competencia').value.trim();
-            const productosTratados = document.getElementById('productos-tratados').value.trim();
-            const proximaAccion     = document.getElementById('proxima-accion').value.trim();
-            const fechaCompromiso   = document.getElementById('fecha-compromiso').value;
+            const visitaId     = document.getElementById('cerrar-visita').value;
+            const conclusiones = document.getElementById('conclusiones').value.trim();
+            const resultado    = document.getElementById('resultado').value;
 
-            const disparadores = [];
-            if (document.getElementById('disp-logistica').checked)  disparadores.push('Logística/Embarques');
-            if (document.getElementById('disp-supply').checked)     disparadores.push('Supply Chain/Programación');
-            if (document.getElementById('disp-creditos').checked)   disparadores.push('Créditos/Cobranza');
-            if (document.getElementById('disp-direccion').checked)  disparadores.push('Dirección Comercial');
+            // Leer productos seleccionados
+            const productosArr = [];
+            if (document.getElementById('prod-galvanizada') && document.getElementById('prod-galvanizada').checked) productosArr.push('Lámina Galvanizada');
+            if (document.getElementById('prod-negra') && document.getElementById('prod-negra').checked)             productosArr.push('Lámina Negra');
+            if (document.getElementById('prod-tuberia') && document.getElementById('prod-tuberia').checked)         productosArr.push('Tubería');
+            if (document.getElementById('prod-perfiles') && document.getElementById('prod-perfiles').checked)       productosArr.push('Perfiles');
+            const productosTratados = productosArr.join(', ');
 
+            // Leer si nos considera proveedor
+            const esProveedor  = proveedorSeleccionado === 'si' ? 'Sí' : proveedorSeleccionado === 'no' ? 'No' : '';
+            const razonNo      = document.getElementById('razon-no') ? document.getElementById('razon-no').value.trim() : '';
+            const competencia  = '';
+
+            const probCierre      = '';
+            const satisfaccion    = '';
+            const proximaAccion   = '';
+            const fechaCompromiso = '';
+            const disparadores    = [];
+
+            // Validaciones
             if (!visitaId) {
                 alert('Selecciona la visita que deseas cerrar.');
                 return;
             }
+            if (productosArr.length === 0) {
+                alert('Selecciona al menos un producto que compra el cliente.');
+                return;
+            }
+            if (!proveedorSeleccionado) {
+                alert('Indica si el cliente nos considera como proveedor.');
+                return;
+            }
+            if (proveedorSeleccionado === 'no' && !razonNo) {
+                alert('Explica por qué el cliente no nos considera como proveedor.');
+                return;
+            }
+            if (!resultado) {
+                alert('Selecciona el resultado de la visita.');
+                return;
+            }
             if (!conclusiones) {
-                alert('Escribe un resumen o conclusiones de la visita antes de cerrar.');
+                alert('Escribe o graba las conclusiones de la visita.');
                 return;
             }
 
@@ -1926,13 +2031,15 @@
                         conclusiones,
                         hora_fin: horaFin,
                         resultado: resultado || null,
-                        prob_cierre: probCierre || null,
-                        satisfaccion: satisfaccion ? parseInt(satisfaccion) : null,
-                        competencia: competencia || null,
+                        es_proveedor: esProveedor || null,
+                        comentario_proveedor: razonNo || null,
                         productos_tratados: productosTratados || null,
-                        proxima_accion: proximaAccion || null,
-                        fecha_compromiso: fechaCompromiso || null,
-                        disparadores: disparadores.length > 0 ? disparadores.join(', ') : null,
+                        prob_cierre: null,
+                        satisfaccion: null,
+                        competencia: null,
+                        proxima_accion: null,
+                        fecha_compromiso: null,
+                        disparadores: null,
                         ...(duracion && { duracion })
                     })
                 });
@@ -1954,21 +2061,10 @@
                 }
 
                 // Limpiar formulario
-                document.getElementById('cerrar-vendedor').value = '';
-                document.getElementById('cerrar-visita').innerHTML = '<option value="">Primero selecciona un vendedor</option>';
-                document.getElementById('cerrar-visita').disabled = true;
-                document.getElementById('conclusiones').value = '';
-                document.getElementById('resultado').value = '';
-                document.getElementById('prob-cierre').value = '';
-                document.getElementById('satisfaccion').value = '';
-                document.getElementById('competencia').value = '';
-                document.getElementById('productos-tratados').value = '';
-                document.getElementById('proxima-accion').value = '';
-                document.getElementById('fecha-compromiso').value = '';
-                document.getElementById('disp-logistica').checked = false;
-                document.getElementById('disp-supply').checked = false;
-                document.getElementById('disp-creditos').checked = false;
-                document.getElementById('disp-direccion').checked = false;
+                limpiarFormularioCerrar();
+                // Recargar visitas en proceso
+                const vendNombre = vendedorSesion ? vendedorSesion.nombre : '';
+                if (vendNombre) cargarVisitasEnProceso(vendNombre);
 
                 if (grabando && reconocimiento) reconocimiento.stop();
 
@@ -2057,13 +2153,9 @@
                                 <th>Duración</th>
                                 <th>Estatus</th>
                                 <th>Resultado</th>
-                                <th>Satisfacción</th>
-                                <th>Prob. Cierre</th>
-                                <th>Competencia</th>
-                                <th>Productos Tratados</th>
-                                <th>Próxima Acción</th>
-                                <th>Fecha Compromiso</th>
-                                <th>Disparadores</th>
+                                <th>Productos</th>
+                                <th>¿Nos considera?</th>
+                                <th>Comentario Proveedor</th>
                                 <th>Conclusiones</th>
                                 <th>Ubicación</th>
                             </tr></thead>
@@ -2071,8 +2163,6 @@
                                 ${data.map(v => {
                                     const badgeEstatus   = v.estatus === 'Cerrada' ? 'badge-green' : v.estatus === 'Visita No Válida' ? 'badge-red' : 'badge-yellow';
                                     const badgeResultado = v.resultado === 'Exitosa' ? 'badge-green' : v.resultado === 'Requiere seguimiento' ? 'badge-yellow' : v.resultado ? 'badge-red' : '';
-                                    const stars     = v.satisfaccion ? '⭐'.repeat(v.satisfaccion) : '—';
-                                    const badgeProb = v.prob_cierre === 'Alta' ? 'badge-green' : v.prob_cierre === 'Media' ? 'badge-yellow' : v.prob_cierre === 'Baja' ? 'badge-red' : '';
                                     let duracion = '—';
                                     if (v.hora_visita && v.hora_fin) {
                                         const diff = new Date(v.hora_fin) - new Date(v.hora_visita);
@@ -2095,13 +2185,9 @@
                                         <td style="font-family:'DM Mono',monospace;font-size:0.72rem;text-align:center"><span class="badge ${v.hora_fin ? 'badge-green' : ''}" style="${!v.hora_fin ? 'color:var(--text-dim)' : ''}">${duracion}</span></td>
                                         <td><span class="badge ${badgeEstatus}">${escHtml(v.estatus||'—')}</span></td>
                                         <td><span class="${v.resultado ? 'badge ' + badgeResultado : ''}">${escHtml(v.resultado||'—')}</span></td>
-                                        <td style="text-align:center">${stars}</td>
-                                        <td><span class="${v.prob_cierre ? 'badge ' + badgeProb : ''}">${escHtml(v.prob_cierre||'—')}</span></td>
-                                        <td>${escHtml(v.competencia||'—')}</td>
                                         <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.productos_tratados||'')}">${escHtml(v.productos_tratados||'—')}</td>
-                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.proxima_accion||'')}">${escHtml(v.proxima_accion||'—')}</td>
-                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${escHtml(v.fecha_compromiso||'—')}</td>
-                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.disparadores||'')}">${escHtml(v.disparadores||'—')}</td>
+                                        <td style="text-align:center">${v.es_proveedor === 'Sí' ? '<span class="badge badge-green">Sí</span>' : v.es_proveedor === 'No' ? '<span class="badge badge-red">No</span>' : '—'}</td>
+                                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.comentario_proveedor||'')}">${escHtml(v.comentario_proveedor||'—')}</td>
                                         <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.conclusiones||'')}">${escHtml(v.conclusiones||'—')}</td>
                                         <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.ubicacion||'')}">${escHtml(v.ubicacion||'—')}</td>
                                     </tr>`;}).join('')}
