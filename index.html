@@ -1898,7 +1898,7 @@
 
             try {
                 const data = await sbFetch(
-                    'visitas?select=id,cliente,hora_visita&vendedor=eq.' +
+                    'visitas?select=id,cliente,tipo_cliente,hora_visita&vendedor=eq.' +
                     encodeURIComponent(vendedorNombre) +
                     '&estatus=eq.En%20Proceso&order=hora_visita.desc'
                 );
@@ -1910,7 +1910,8 @@
                         const o = document.createElement('option');
                         o.value = v.id;
                         const hora = (v.hora_visita || '').replace('T', ' ').slice(0, 16);
-                        o.textContent = escHtml(v.cliente) + ' — ' + hora;
+                        const tipoLabel = v.tipo_cliente === 'PROSPECTO' ? '[PROSPECTO]' : '[CLIENTE]';
+                        o.textContent = tipoLabel + ' ' + escHtml(v.cliente) + ' — ' + hora;
                         sv.appendChild(o);
                     });
                     sv.disabled = false;
