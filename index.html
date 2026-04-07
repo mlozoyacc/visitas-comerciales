@@ -963,9 +963,17 @@
 
                     <div class="form-group">
                         <label>Cliente</label>
+                        <!-- Checkbox Prospecto -->
+                        <label id="prospecto-toggle" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--text-muted);text-transform:none;letter-spacing:normal;">
+                            <input type="checkbox" id="es-prospecto" onchange="toggleProspecto()" style="accent-color:var(--accent);width:16px;height:16px;">
+                            <span style="color:var(--warning)">⭐ Es Prospecto (sin número de cliente)</span>
+                        </label>
+                        <!-- Select normal de clientes -->
                         <select id="cliente" disabled>
                             <option value="" selected>Primero selecciona un vendedor</option>
                         </select>
+                        <!-- Input libre para prospecto (oculto por defecto) -->
+                        <input type="text" id="cliente-prospecto" placeholder="Escribe el nombre del prospecto" style="display:none;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
                     </div>
 
                     <div class="form-group">
@@ -1294,16 +1302,22 @@
                 const sv = document.getElementById('vendedor');
                 sv.outerHTML = '<input type="text" id="vendedor" value="' + escHtml(vendedorSesion.nombre) + '" readonly style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-family:Sora,sans-serif;font-size:0.875rem;padding:10px 14px;width:100%;cursor:default" />';
 
-                // Cliente → input de texto libre
-                const sc = document.getElementById('cliente');
-                sc.outerHTML = '<input type="text" id="cliente" placeholder="Escribe el nombre del cliente o prospecto" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:Sora,sans-serif;font-size:0.875rem;padding:10px 14px;width:100%" />';
-
                 // Badge modo libre en header
                 const chip = document.getElementById('visita-activa-chip');
                 const badge = document.createElement('span');
                 badge.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:99px;padding:4px 12px;font-size:0.72rem;font-weight:600;color:var(--warning)';
                 badge.textContent = '👤 Gerente / Supervisor';
                 chip.parentNode.insertBefore(badge, chip);
+
+                // Cliente → forzar modo PROSPECTO: checkbox marcado y bloqueado, input libre visible
+                const esProspectoChk = document.getElementById('es-prospecto');
+                if (esProspectoChk) {
+                    esProspectoChk.checked = true;
+                    esProspectoChk.disabled = true;
+                    toggleProspecto(); // muestra input libre, oculta select
+                }
+                const toggleLabel = document.getElementById('prospecto-toggle');
+                if (toggleLabel) toggleLabel.style.opacity = '0.5';
 
                 // Cerrar visita — vendedor como texto prellenado
                 const scv = document.getElementById('cerrar-vendedor');
@@ -1605,6 +1619,10 @@
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (name === 'kpi') actualizarKPI();
+            if (name === 'cerrar') {
+                const vendedorCerrar = document.getElementById('cerrar-vendedor').value;
+                if (vendedorCerrar) cargarVisitasEnProceso(vendedorCerrar);
+            }
         }
 
         // ── HELPERS UI ───────────────────────────────────────────────
@@ -1715,6 +1733,23 @@
             }
         }
 
+        // ── TOGGLE PROSPECTO ─────────────────────────────────────────
+        function toggleProspecto() {
+            const esProspecto = document.getElementById('es-prospecto').checked;
+            const selectCliente = document.getElementById('cliente');
+            const inputProspecto = document.getElementById('cliente-prospecto');
+
+            if (esProspecto) {
+                selectCliente.style.display = 'none';
+                inputProspecto.style.display = 'block';
+                inputProspecto.focus();
+            } else {
+                selectCliente.style.display = 'block';
+                inputProspecto.style.display = 'none';
+                inputProspecto.value = '';
+            }
+        }
+
         // ── INICIAR VISITA (INSERT con estatus En Proceso) ───────────
         async function iniciarVisita() {
             const vendedorEl  = document.getElementById('vendedor');
@@ -1722,7 +1757,11 @@
             const vendedor    = vendedorSesion && vendedorSesion.modo === 'libre'
                 ? vendedorSesion.nombre
                 : (vendedorVal ? vendedorVal.split('|')[1] : '');
-            const cliente     = document.getElementById('cliente').value;
+            const esProspecto = document.getElementById('es-prospecto').checked;
+            const cliente     = esProspecto
+                ? document.getElementById('cliente-prospecto').value.trim()
+                : document.getElementById('cliente').value;
+            const tipoCliente = esProspecto ? 'PROSPECTO' : 'CLIENTE';
             const horaVisita      = document.getElementById('hora-visita').value;
             const ubicacion       = document.getElementById('ubicacion').value;
             const tipoVisita      = document.getElementById('tipo-visita').value;
@@ -1734,7 +1773,7 @@
             const lon             = parseFloat(document.getElementById('visita-lon').value);
 
             if (!vendedor || !cliente || !horaVisita || !ubicacion) {
-                alert('Por favor, completa los campos obligatorios: ubicación, vendedor, cliente y hora de inicio.');
+                alert('Por favor, completa los campos obligatorios: ubicación, vendedor, ' + (esProspecto ? 'nombre del prospecto' : 'cliente') + ' y hora de inicio.');
                 return;
             }
             if (isNaN(lat) || isNaN(lon)) {
@@ -1752,6 +1791,7 @@
                     body: JSON.stringify({
                         vendedor,
                         cliente,
+                        tipo_cliente: tipoCliente,
                         hora_visita: horaVisita,
                         ubicacion,
                         tipo_visita: tipoVisita || null,
@@ -1773,12 +1813,39 @@
 
                 visitas.push({ vendedor, cliente, hora_visita: horaVisita, ubicacion, estatus: 'En Proceso', conclusiones: '' });
                 actualizarKPI();
+
+                // Pre-cargar la lista de Cerrar Visita en segundo plano
+                const scv = document.getElementById('cerrar-vendedor');
+                if (scv) {
+                    scv.value = vendedor;
+                    cargarVisitasEnProceso(vendedor);
+                }
+
                 showToast('Visita iniciada — GPS activo, no te alejes sin cerrar ✓');
 
-                // Limpiar formulario
-                document.getElementById('vendedor').value = '';
-                document.getElementById('cliente').innerHTML = '<option value="">Primero selecciona un vendedor</option>';
-                document.getElementById('cliente').disabled = true;
+                // Limpiar formulario — conservar vendedor de sesión
+                const svEl = document.getElementById('vendedor');
+                if (vendedorSesion && vendedorSesion.modo === 'vendedor') {
+                    // Restaurar selección del vendedor y recargar sus clientes
+                    const valBuscado = vendedorSesion.proveedor + '|' + vendedorSesion.nombre;
+                    for (let opt of svEl.options) {
+                        if (opt.value === valBuscado) { opt.selected = true; break; }
+                    }
+                    svEl.disabled = true;
+                    cargarClientesPorVendedor(valBuscado);
+                } else if (vendedorSesion && vendedorSesion.modo === 'libre') {
+                    // Modo libre: el vendedor es un input de texto, no tocarlo
+                    const clienteLibre = document.getElementById('cliente');
+                    if (clienteLibre && clienteLibre.tagName === 'INPUT') clienteLibre.value = '';
+                } else {
+                    svEl.value = '';
+                    document.getElementById('cliente').innerHTML = '<option value="">Primero selecciona un vendedor</option>';
+                    document.getElementById('cliente').disabled = true;
+                }
+                document.getElementById('cliente').style.display = 'block';
+                document.getElementById('cliente-prospecto').value = '';
+                document.getElementById('cliente-prospecto').style.display = 'none';
+                document.getElementById('es-prospecto').checked = false;
                 document.getElementById('ubicacion').value = '';
                 document.getElementById('hora-visita').value = '';
                 document.getElementById('visita-lat').value = '';
@@ -2122,80 +2189,266 @@
         }
 
         // ── CONSULTAR VISITAS (desde Supabase) ───────────────────────
+        let visitasData = [];          // datos originales
+        let visitasSortCol = null;     // columna activa de ordenamiento
+        let visitasSortDir = 'asc';    // dirección
+        let visitasFiltros = {};       // { colKey: valorFiltro }
+
+        const VISITAS_COLS = [
+            { key: 'vendedor',            label: 'Vendedor' },
+            { key: 'cliente',             label: 'Cliente' },
+            { key: 'tipo_cliente',        label: 'Tipo Cliente' },
+            { key: 'tipo_visita',         label: 'Tipo Visita' },
+            { key: 'estado_cliente',      label: 'Estado Cliente' },
+            { key: 'contacto_nombre',     label: 'Contacto' },
+            { key: 'contacto_puesto',     label: 'Puesto' },
+            { key: 'objetivo',            label: 'Objetivo' },
+            { key: 'hora_visita',         label: 'Inicio' },
+            { key: 'hora_fin',            label: 'Fin' },
+            { key: '_duracion',           label: 'Duración' },
+            { key: 'estatus',             label: 'Estatus' },
+            { key: 'resultado',           label: 'Resultado' },
+            { key: 'productos_tratados',  label: 'Productos' },
+            { key: 'es_proveedor',        label: '¿Nos considera?' },
+            { key: 'comentario_proveedor',label: 'Comentario Proveedor' },
+            { key: 'conclusiones',        label: 'Conclusiones' },
+            { key: 'ubicacion',           label: 'Ubicación' },
+        ];
+
+        function visitaGetVal(v, key) {
+            if (key === '_duracion') {
+                if (!v.hora_visita || !v.hora_fin) return '';
+                const diff = new Date(v.hora_fin) - new Date(v.hora_visita);
+                if (diff <= 0) return '';
+                return String(Math.floor(diff/3600000)).padStart(2,'0') + ':' + String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+            }
+            return v[key] ?? '';
+        }
+
+        function visitasGetFiltered() {
+            let rows = [...visitasData];
+            // Filtrar
+            Object.entries(visitasFiltros).forEach(([key, val]) => {
+                if (!val) return;
+                const v = val.toLowerCase();
+                rows = rows.filter(r => String(visitaGetVal(r, key)).toLowerCase().includes(v));
+            });
+            // Ordenar
+            if (visitasSortCol) {
+                rows.sort((a, b) => {
+                    const va = String(visitaGetVal(a, visitasSortCol)).toLowerCase();
+                    const vb = String(visitaGetVal(b, visitasSortCol)).toLowerCase();
+                    return visitasSortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+                });
+            }
+            return rows;
+        }
+
+        function visitasSortBy(key) {
+            if (visitasSortCol === key) {
+                visitasSortDir = visitasSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                visitasSortCol = key;
+                visitasSortDir = 'asc';
+            }
+            renderTablaVisitas();
+        }
+
+        function visitasFiltrar(key, val) {
+            visitasFiltros[key] = val;
+            // Cerrar todos los dropdowns
+            document.querySelectorAll('.vf-dropdown').forEach(d => d.style.display = 'none');
+            renderTablaVisitas();
+        }
+
+        function visitasToggleDropdown(key, event) {
+            event.stopPropagation();
+            // Cerrar otros
+            document.querySelectorAll('.vf-dropdown').forEach(d => {
+                if (d.dataset.col !== key) d.style.display = 'none';
+            });
+            const dd = document.querySelector(`.vf-dropdown[data-col="${key}"]`);
+            if (!dd) return;
+            const isOpen = dd.style.display === 'block';
+            dd.style.display = isOpen ? 'none' : 'block';
+            if (!isOpen) {
+                const inp = dd.querySelector('input');
+                if (inp) { inp.value = visitasFiltros[key] || ''; inp.focus(); renderDropdownOpciones(key, ''); }
+            }
+        }
+
+        function renderDropdownOpciones(key, busqueda) {
+            const dd = document.querySelector(`.vf-dropdown[data-col="${key}"]`);
+            if (!dd) return;
+            const lista = dd.querySelector('.vf-opciones');
+            if (!lista) return;
+            // Valores únicos de la columna en los datos originales
+            const todos = [...new Set(visitasData.map(v => String(visitaGetVal(v, key))).filter(x => x && x !== ''))].sort();
+            const filtrados = busqueda ? todos.filter(x => x.toLowerCase().includes(busqueda.toLowerCase())) : todos;
+            lista.innerHTML = (busqueda ? '' : `<div class="vf-opcion vf-limpiar" onclick="visitasFiltrar('${key}','')">✕ Mostrar todos</div>`) +
+                filtrados.slice(0, 30).map(x =>
+                    `<div class="vf-opcion" onclick="visitasFiltrar('${key}','${escHtml(x).replace(/'/g,"\'")}')">${escHtml(x)}</div>`
+                ).join('');
+        }
+
         async function consultarVisitas() {
             showLoading('resultado-consulta');
             try {
                 const data = await sbFetch('visitas?select=*&order=hora_visita.desc');
                 if (data.length === 0) {
-                    document.getElementById('resultado-consulta').innerHTML = `
-                        <div class="empty-state"><div class="empty-state-icon">📭</div><p>No hay visitas registradas aún.</p></div>`;
+                    document.getElementById('resultado-consulta').innerHTML =
+                        `<div class="empty-state"><div class="empty-state-icon">📭</div><p>No hay visitas registradas aún.</p></div>`;
                     return;
                 }
+                visitasData = data;
                 visitas = data;
+                visitasSortCol = null; visitasSortDir = 'asc'; visitasFiltros = {};
+
+                // Inyectar estilos de tabla interactiva si no existen
+                if (!document.getElementById('vf-style')) {
+                    const st = document.createElement('style');
+                    st.id = 'vf-style';
+                    st.textContent = `
+                        .vf-th { position:relative; cursor:default; user-select:none; padding:0 !important; }
+                        .vf-th-inner { display:flex; align-items:center; gap:4px; padding:10px 10px 4px; white-space:nowrap; }
+                        .vf-sort-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.75rem; padding:2px 3px; border-radius:4px; line-height:1; }
+                        .vf-sort-btn:hover, .vf-sort-btn.active { color:var(--accent); background:rgba(59,130,246,0.12); }
+                        .vf-filter-row th { padding:4px 6px 8px; background:var(--surface2); }
+                        .vf-filter-wrap { position:relative; }
+                        .vf-filter-btn { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text-muted); font-family:'Sora',sans-serif; font-size:0.68rem; padding:4px 6px; cursor:pointer; display:flex; align-items:center; gap:4px; white-space:nowrap; min-width:80px; transition:border-color 0.15s; }
+                        .vf-filter-btn.activo { border-color:var(--accent); color:var(--accent); }
+                        .vf-filter-btn:hover { border-color:var(--accent); }
+                        .vf-dropdown { display:none; position:absolute; top:calc(100% + 4px); left:0; min-width:180px; max-width:260px; background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 28px rgba(0,0,0,0.5); z-index:999; overflow:hidden; }
+                        .vf-search { width:100%; background:var(--bg); border:none; border-bottom:1px solid var(--border); color:var(--text); font-family:'Sora',sans-serif; font-size:0.78rem; padding:8px 10px; outline:none; }
+                        .vf-opciones { max-height:180px; overflow-y:auto; }
+                        .vf-opcion { padding:7px 12px; font-size:0.78rem; color:var(--text); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+                        .vf-opcion:hover { background:rgba(59,130,246,0.12); color:var(--accent); }
+                        .vf-limpiar { color:var(--danger) !important; border-bottom:1px solid var(--border); }
+                        .vf-count { font-size:0.72rem; color:var(--text-muted); padding:6px 12px; border-top:1px solid var(--border); background:var(--surface2); }
+                    `;
+                    document.head.appendChild(st);
+                }
+
+                // Cerrar dropdowns al hacer click fuera
+                document.addEventListener('click', () => {
+                    document.querySelectorAll('.vf-dropdown').forEach(d => d.style.display = 'none');
+                }, { once: false, capture: true });
 
                 document.getElementById('resultado-consulta').innerHTML = `
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                        <span style="font-size:0.78rem;color:var(--text-muted)">${data.length} registros</span>
+                        <span id="vf-count-label" style="font-size:0.78rem;color:var(--text-muted)">${data.length} registros</span>
                         <span style="font-size:0.72rem;color:var(--text-dim)">← Scroll horizontal y vertical →</span>
                     </div>
                     <div class="visitas-scroll-wrap">
-                        <table>
-                            <thead><tr>
-                                <th>Vendedor</th>
-                                <th>Cliente</th>
-                                <th>Tipo</th>
-                                <th>Estado Cliente</th>
-                                <th>Contacto</th>
-                                <th>Puesto</th>
-                                <th>Objetivo</th>
-                                <th>Inicio</th>
-                                <th>Fin</th>
-                                <th>Duración</th>
-                                <th>Estatus</th>
-                                <th>Resultado</th>
-                                <th>Productos</th>
-                                <th>¿Nos considera?</th>
-                                <th>Comentario Proveedor</th>
-                                <th>Conclusiones</th>
-                                <th>Ubicación</th>
-                            </tr></thead>
-                            <tbody>
-                                ${data.map(v => {
-                                    const badgeEstatus   = v.estatus === 'Cerrada' ? 'badge-green' : v.estatus === 'Visita No Válida' ? 'badge-red' : 'badge-yellow';
-                                    const badgeResultado = v.resultado === 'Exitosa' ? 'badge-green' : v.resultado === 'Requiere seguimiento' ? 'badge-yellow' : v.resultado ? 'badge-red' : '';
-                                    let duracion = '—';
-                                    if (v.hora_visita && v.hora_fin) {
-                                        const diff = new Date(v.hora_fin) - new Date(v.hora_visita);
-                                        if (diff > 0) {
-                                            const hh = String(Math.floor(diff / 3600000)).padStart(2,'0');
-                                            const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
-                                            duracion = hh + ':' + mm;
-                                        }
-                                    }
-                                    return `<tr>
-                                        <td>${escHtml(v.vendedor)}</td>
-                                        <td>${escHtml(v.cliente)}</td>
-                                        <td>${escHtml(v.tipo_visita||'—')}</td>
-                                        <td>${escHtml(v.estado_cliente||'—')}</td>
-                                        <td>${escHtml(v.contacto_nombre||'—')}</td>
-                                        <td>${escHtml(v.contacto_puesto||'—')}</td>
-                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.objetivo||'')}">${escHtml(v.objetivo||'—')}</td>
-                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${escHtml((v.hora_visita||'').replace('T',' ').slice(0,16))}</td>
-                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${v.hora_fin ? escHtml(v.hora_fin.replace('T',' ').slice(0,16)) : '—'}</td>
-                                        <td style="font-family:'DM Mono',monospace;font-size:0.72rem;text-align:center"><span class="badge ${v.hora_fin ? 'badge-green' : ''}" style="${!v.hora_fin ? 'color:var(--text-dim)' : ''}">${duracion}</span></td>
-                                        <td><span class="badge ${badgeEstatus}">${escHtml(v.estatus||'—')}</span></td>
-                                        <td><span class="${v.resultado ? 'badge ' + badgeResultado : ''}">${escHtml(v.resultado||'—')}</span></td>
-                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.productos_tratados||'')}">${escHtml(v.productos_tratados||'—')}</td>
-                                        <td style="text-align:center">${v.es_proveedor === 'Sí' ? '<span class="badge badge-green">Sí</span>' : v.es_proveedor === 'No' ? '<span class="badge badge-red">No</span>' : '—'}</td>
-                                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.comentario_proveedor||'')}">${escHtml(v.comentario_proveedor||'—')}</td>
-                                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.conclusiones||'')}">${escHtml(v.conclusiones||'—')}</td>
-                                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.ubicacion||'')}">${escHtml(v.ubicacion||'—')}</td>
-                                    </tr>`;}).join('')}
-                            </tbody>
+                        <table id="visitas-tabla">
+                            <thead>
+                                <tr id="vf-header-row"></tr>
+                                <tr class="vf-filter-row" id="vf-filter-row"></tr>
+                            </thead>
+                            <tbody id="visitas-tbody"></tbody>
                         </table>
                     </div>`;
 
+                // Construir encabezados y fila de filtros
+                const headerRow = document.getElementById('vf-header-row');
+                const filterRow = document.getElementById('vf-filter-row');
+                VISITAS_COLS.forEach(col => {
+                    // TH con botón de ordenamiento
+                    const th = document.createElement('th');
+                    th.className = 'vf-th';
+                    th.innerHTML = `<div class="vf-th-inner">
+                        <span>${col.label}</span>
+                        <button class="vf-sort-btn" id="vsort-${col.key}" onclick="visitasSortBy('${col.key}')" title="Ordenar">⇅</button>
+                    </div>`;
+                    headerRow.appendChild(th);
+
+                    // TH con filtro dropdown
+                    const tf = document.createElement('th');
+                    tf.innerHTML = `<div class="vf-filter-wrap">
+                        <button class="vf-filter-btn" id="vfbtn-${col.key}" onclick="visitasToggleDropdown('${col.key}', event)" title="Filtrar por ${col.label}">
+                            🔍 <span id="vfbtn-label-${col.key}">Filtrar</span>
+                        </button>
+                        <div class="vf-dropdown" data-col="${col.key}">
+                            <input class="vf-search" placeholder="Buscar ${col.label}..." oninput="renderDropdownOpciones('${col.key}', this.value)" onclick="event.stopPropagation()" />
+                            <div class="vf-opciones"></div>
+                            <div class="vf-count" id="vf-opcount-${col.key}"></div>
+                        </div>
+                    </div>`;
+                    filterRow.appendChild(tf);
+                });
+
+                renderTablaVisitas();
+
             } catch(e) { showError('resultado-consulta', 'No se pudieron cargar las visitas: ' + e.message); }
+        }
+
+        function renderTablaVisitas() {
+            const rows = visitasGetFiltered();
+            const tbody = document.getElementById('visitas-tbody');
+            if (!tbody) return;
+
+            // Actualizar contador
+            const lbl = document.getElementById('vf-count-label');
+            if (lbl) lbl.textContent = rows.length + ' de ' + visitasData.length + ' registros';
+
+            // Actualizar ícono de sort en headers
+            VISITAS_COLS.forEach(col => {
+                const btn = document.getElementById('vsort-' + col.key);
+                if (!btn) return;
+                if (visitasSortCol === col.key) {
+                    btn.textContent = visitasSortDir === 'asc' ? '▲' : '▼';
+                    btn.classList.add('active');
+                } else {
+                    btn.textContent = '⇅';
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Actualizar botones de filtro activos
+            VISITAS_COLS.forEach(col => {
+                const btn = document.getElementById('vfbtn-' + col.key);
+                const lbl = document.getElementById('vfbtn-label-' + col.key);
+                if (!btn || !lbl) return;
+                const val = visitasFiltros[col.key];
+                if (val) {
+                    btn.classList.add('activo');
+                    lbl.textContent = val.length > 10 ? val.slice(0,10)+'…' : val;
+                } else {
+                    btn.classList.remove('activo');
+                    lbl.textContent = 'Filtrar';
+                }
+            });
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${VISITAS_COLS.length}" style="text-align:center;padding:28px;color:var(--text-muted)">Sin resultados para los filtros aplicados</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = rows.map(v => {
+                const badgeEstatus   = v.estatus === 'Cerrada' ? 'badge-green' : v.estatus === 'Visita No Válida' ? 'badge-red' : 'badge-yellow';
+                const badgeResultado = v.resultado === 'Exitosa' ? 'badge-green' : v.resultado === 'Requiere seguimiento' ? 'badge-yellow' : v.resultado ? 'badge-red' : '';
+                const duracion = visitaGetVal(v, '_duracion') || '—';
+                return `<tr>
+                    <td>${escHtml(v.vendedor||'—')}</td>
+                    <td>${escHtml(v.cliente||'—')}</td>
+                    <td>${v.tipo_cliente === 'PROSPECTO' ? '<span class="badge badge-yellow">PROSPECTO</span>' : '<span class="badge badge-green">CLIENTE</span>'}</td>
+                    <td>${escHtml(v.tipo_visita||'—')}</td>
+                    <td>${escHtml(v.estado_cliente||'—')}</td>
+                    <td>${escHtml(v.contacto_nombre||'—')}</td>
+                    <td>${escHtml(v.contacto_puesto||'—')}</td>
+                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.objetivo||'')}">${escHtml(v.objetivo||'—')}</td>
+                    <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${escHtml((v.hora_visita||'').replace('T',' ').slice(0,16))}</td>
+                    <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${v.hora_fin ? escHtml(v.hora_fin.replace('T',' ').slice(0,16)) : '—'}</td>
+                    <td style="font-family:'DM Mono',monospace;font-size:0.72rem;text-align:center"><span class="badge ${v.hora_fin ? 'badge-green' : ''}" style="${!v.hora_fin?'color:var(--text-dim)':''}">${duracion}</span></td>
+                    <td><span class="badge ${badgeEstatus}">${escHtml(v.estatus||'—')}</span></td>
+                    <td><span class="${v.resultado ? 'badge '+badgeResultado : ''}">${escHtml(v.resultado||'—')}</span></td>
+                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.productos_tratados||'')}">${escHtml(v.productos_tratados||'—')}</td>
+                    <td style="text-align:center">${v.es_proveedor==='Sí'?'<span class="badge badge-green">Sí</span>':v.es_proveedor==='No'?'<span class="badge badge-red">No</span>':'—'}</td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.comentario_proveedor||'')}">${escHtml(v.comentario_proveedor||'—')}</td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.conclusiones||'')}">${escHtml(v.conclusiones||'—')}</td>
+                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.ubicacion||'')}">${escHtml(v.ubicacion||'—')}</td>
+                </tr>`;
+            }).join('');
         }
 
         // ── CONSULTAR VENDEDORES CRUD ────────────────────────────────
