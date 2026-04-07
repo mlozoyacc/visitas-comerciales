@@ -1391,8 +1391,8 @@
 
 
         // ── GPS MONITOR ──────────────────────────────────────────────
-        const GPS_RADIO_INVALIDA    = 10; // metros → cierre automático
-        const GPS_RADIO_ADVERTENCIA = 7; // metros → aviso al vendedor
+        const GPS_RADIO_INVALIDA    = 50; // metros → cierre automático
+        const GPS_RADIO_ADVERTENCIA = 30; // metros → aviso al vendedor
         let gpsWatchId        = null;
         let visitaActivaId    = null;
         let visitaActivaLat   = null;
@@ -1462,6 +1462,8 @@
             navigator.geolocation.getCurrentPosition(
                 async function(pos) {
                     if (!visitaActivaId) return;
+                    // Ignorar lecturas con poca precisión
+                    if (pos.coords.accuracy > GPS_RADIO_INVALIDA) return;
                     const dist = calcularDistancia(
                         visitaActivaLat, visitaActivaLon,
                         pos.coords.latitude, pos.coords.longitude
@@ -1526,6 +1528,8 @@
             gpsWatchId = navigator.geolocation.watchPosition(
                 async function(pos) {
                     if (!visitaActivaId || invalidando) return;
+                    // Ignorar lecturas con poca precisión (fluctuación GPS)
+                    if (pos.coords.accuracy > GPS_RADIO_INVALIDA) return;
                     const dist = calcularDistancia(
                         visitaActivaLat, visitaActivaLon,
                         pos.coords.latitude, pos.coords.longitude
@@ -1537,14 +1541,14 @@
                             `⚠️ Te estás alejando del cliente (${Math.round(dist)}m). ¡Cierra la visita antes de irte!`);
                         enviarNotificacion(
                             '⚠️ ¡Alerta de Visita!',
-                            `Te estás alejando del cliente (${Math.round(dist)}m de 250m). Cierra la visita antes de irte.`
+                            `Te estás alejando del cliente (${Math.round(dist)}m). Cierra la visita antes de irte.`
                         );
                     } else {
                         if (bannerVisible) ocultarBanner();
                     }
                 },
                 function(err) { console.warn('GPS watch error:', err.message); },
-                { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
+                { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 }
             );
         }
 
