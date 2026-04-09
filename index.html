@@ -6,7 +6,7 @@
     <title>Visitas Comerciales</title>
 
     <!-- PWA -->
-    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlZpc2l0YXMgQ29tZXJjaWFsZXMiLCAic2hvcnRfbmFtZSI6ICJWaXNpdGFzIiwgImRlc2NyaXB0aW9uIjogIlJlZ2lzdHJvIHkgc2VndWltaWVudG8gZGUgdmlzaXRhcyBhIGNsaWVudGVzIiwgInN0YXJ0X3VybCI6ICIvdmlzaXRhcy1jb21lcmNpYWxlcy8iLCAic2NvcGUiOiAiL3Zpc2l0YXMtY29tZXJjaWFsZXMvIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZDExMTciLCAidGhlbWVfY29sb3IiOiAiIzBkMTExNyIsICJpY29ucyI6IFt7InNyYyI6ICJodHRwczovL3ZpYS5wbGFjZWhvbGRlci5jb20vMTkyLzNiODJmNi9mZmZmZmY/dGV4dD1WIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifSwgeyJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzUxMi8zYjgyZjYvZmZmZmZmP3RleHQ9ViIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==">
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlZpc2l0YXMgQ29tZXJjaWFsZXMiLCAic2hvcnRfbmFtZSI6ICJWaXNpdGFzIiwgImRlc2NyaXB0aW9uIjogIlJlZ2lzdHJvIHkgc2VndWltaWVudG8gZGUgdmlzaXRhcyBhIGNsaWVudGVzIiwgInN0YXJ0X3VybCI6ICIvIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZDExMTciLCAidGhlbWVfY29sb3IiOiAiIzBkMTExNyIsICJpY29ucyI6IFt7InNyYyI6ICJodHRwczovL3ZpYS5wbGFjZWhvbGRlci5jb20vMTkyLzNiODJmNi9mZmZmZmY/dGV4dD1WIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifSwgeyJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzUxMi8zYjgyZjYvZmZmZmZmP3RleHQ9ViIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==">
     <meta name="theme-color" content="#0d1117">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1393,17 +1393,38 @@
         // ── GPS MONITOR ──────────────────────────────────────────────
         const GPS_RADIO_INVALIDA    = 250; // metros → cierre automático
         const GPS_RADIO_ADVERTENCIA = 200; // metros → aviso al vendedor
+        const GPS_SESSION_KEY       = 'visita_activa_gps'; // sessionStorage key
         let gpsWatchId        = null;
+        let gpsIntervalId     = null; // respaldo periódico cada 60s
         let visitaActivaId    = null;
         let visitaActivaLat   = null;
         let visitaActivaLon   = null;
         let bannerVisible     = false;
-        let wakeLock          = null;  // Screen Wake Lock API
-        let invalidando       = false; // evita doble ejecución de invalidar
+        let wakeLock          = null;
+        let invalidando       = false;
+
+        // ── PERSISTENCIA DE VISITA ACTIVA ────────────────────────────
+        // Guarda en sessionStorage para sobrevivir recargas/minimizar
+        function guardarVisitaActivaSesion(id, lat, lon) {
+            try {
+                sessionStorage.setItem(GPS_SESSION_KEY, JSON.stringify({ id, lat, lon }));
+            } catch(e) {}
+        }
+
+        function leerVisitaActivaSesion() {
+            try {
+                const raw = sessionStorage.getItem(GPS_SESSION_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch(e) { return null; }
+        }
+
+        function borrarVisitaActivaSesion() {
+            try { sessionStorage.removeItem(GPS_SESSION_KEY); } catch(e) {}
+        }
 
         // ── WAKE LOCK — mantiene pantalla activa en Android/Chrome ───
         async function pedirWakeLock() {
-            if (!('wakeLock' in navigator)) return; // no soportado
+            if (!('wakeLock' in navigator)) return;
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
                 wakeLock.addEventListener('release', () => { wakeLock = null; });
@@ -1414,19 +1435,35 @@
 
         async function liberarWakeLock() {
             if (wakeLock) {
-                try { await wakeLock.release(); } catch(e) { /* ignore */ }
+                try { await wakeLock.release(); } catch(e) {}
                 wakeLock = null;
             }
         }
 
-        // Si el sistema libera el Wake Lock (ej. pantalla apagada manualmente),
-        // lo volvemos a pedir cuando el usuario regrese a la app
+        // ── VISIBILITYCHANGE: reanudar todo al volver a la app ───────
         document.addEventListener('visibilitychange', async () => {
-            if (document.visibilityState === 'visible' && visitaActivaId) {
-                // Re-adquirir Wake Lock
-                await pedirWakeLock();
-                // Verificar posición actual al volver a la app
-                verificarPosicionAhora();
+            if (document.visibilityState === 'visible') {
+                // Re-adquirir Wake Lock si hay visita activa
+                if (visitaActivaId) {
+                    await pedirWakeLock();
+                }
+                // Si en memoria no hay visita pero sí en sesión → recuperar
+                if (!visitaActivaId) {
+                    const sesion = leerVisitaActivaSesion();
+                    if (sesion) {
+                        visitaActivaId  = sesion.id;
+                        visitaActivaLat = sesion.lat;
+                        visitaActivaLon = sesion.lon;
+                        invalidando     = false;
+                        document.getElementById('visita-activa-chip').classList.add('show');
+                        await pedirWakeLock();
+                        _arrancarWatchYInterval();
+                    }
+                }
+                // Verificar posición puntual inmediata al volver
+                if (visitaActivaId) {
+                    verificarPosicionAhora();
+                }
             }
         });
 
@@ -1439,30 +1476,28 @@
             return result === 'granted';
         }
 
-        function enviarNotificacion(titulo, cuerpo, icono = '⚠️') {
+        function enviarNotificacion(titulo, cuerpo) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
             try {
                 const n = new Notification(titulo, {
                     body: cuerpo,
                     icon: 'icon-192.png',
                     badge: 'icon-192.png',
-                    tag: 'visita-gps',       // reemplaza notificación anterior en lugar de apilarlas
+                    tag: 'visita-gps',
                     renotify: true,
                     requireInteraction: false,
                     vibrate: [200, 100, 200]
                 });
-                // Al tocar la notificación, abre la app y va a Cerrar Visita
                 n.onclick = () => { window.focus(); showTab('cerrar'); };
             } catch(e) { console.warn('Notificación error:', e); }
         }
 
-        // ── VERIFICACIÓN PUNTUAL (cuando regresa a la app) ───────────
+        // ── VERIFICACIÓN PUNTUAL (al volver a la app o desde interval) ─
         function verificarPosicionAhora() {
             if (!visitaActivaId || !navigator.geolocation) return;
             navigator.geolocation.getCurrentPosition(
                 async function(pos) {
                     if (!visitaActivaId) return;
-                    // Ignorar lecturas con poca precisión
                     if (pos.coords.accuracy > GPS_RADIO_INVALIDA) return;
                     const dist = calcularDistancia(
                         visitaActivaLat, visitaActivaLon,
@@ -1482,7 +1517,7 @@
                     }
                 },
                 function(err) { console.warn('GPS puntual error:', err.message); },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
             );
         }
 
@@ -1509,26 +1544,24 @@
             bannerVisible = false;
         }
 
-        async function iniciarMonitorGPS(lat, lon, idVisita) {
+        // ── ARRANCAR watchPosition + interval de respaldo ────────────
+        function _arrancarWatchYInterval() {
+            // Limpiar anteriores si existen
+            if (gpsWatchId !== null) {
+                navigator.geolocation.clearWatch(gpsWatchId);
+                gpsWatchId = null;
+            }
+            if (gpsIntervalId !== null) {
+                clearInterval(gpsIntervalId);
+                gpsIntervalId = null;
+            }
+
             if (!navigator.geolocation) return;
-            visitaActivaId  = idVisita;
-            visitaActivaLat = lat;
-            visitaActivaLon = lon;
-            invalidando     = false;
 
-            // Mostrar chip de visita activa en header
-            document.getElementById('visita-activa-chip').classList.add('show');
-
-            // Pedir Wake Lock y permiso de notificaciones
-            await pedirWakeLock();
-            await pedirPermisoNotificaciones();
-
-            if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
-
+            // watchPosition: activo mientras la app está en primer plano
             gpsWatchId = navigator.geolocation.watchPosition(
                 async function(pos) {
                     if (!visitaActivaId || invalidando) return;
-                    // Ignorar lecturas con poca precisión (fluctuación GPS)
                     if (pos.coords.accuracy > GPS_RADIO_INVALIDA) return;
                     const dist = calcularDistancia(
                         visitaActivaLat, visitaActivaLon,
@@ -1550,6 +1583,31 @@
                 function(err) { console.warn('GPS watch error:', err.message); },
                 { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 }
             );
+
+            // Interval de respaldo cada 60s: dispara un getCurrentPosition
+            // para capturar el caso donde watchPosition se congeló en 2° plano
+            gpsIntervalId = setInterval(() => {
+                if (!visitaActivaId || invalidando) return;
+                verificarPosicionAhora();
+            }, 60000);
+        }
+
+        async function iniciarMonitorGPS(lat, lon, idVisita) {
+            if (!navigator.geolocation) return;
+            visitaActivaId  = idVisita;
+            visitaActivaLat = lat;
+            visitaActivaLon = lon;
+            invalidando     = false;
+
+            // Persistir en sesión para recuperar si la app se reinicia
+            guardarVisitaActivaSesion(idVisita, lat, lon);
+
+            document.getElementById('visita-activa-chip').classList.add('show');
+
+            await pedirWakeLock();
+            await pedirPermisoNotificaciones();
+
+            _arrancarWatchYInterval();
         }
 
         async function detenerMonitorGPS() {
@@ -1557,17 +1615,22 @@
                 navigator.geolocation.clearWatch(gpsWatchId);
                 gpsWatchId = null;
             }
+            if (gpsIntervalId !== null) {
+                clearInterval(gpsIntervalId);
+                gpsIntervalId = null;
+            }
             visitaActivaId  = null;
             visitaActivaLat = null;
             visitaActivaLon = null;
             invalidando     = false;
+            borrarVisitaActivaSesion();
             ocultarBanner();
             await liberarWakeLock();
             document.getElementById('visita-activa-chip').classList.remove('show');
         }
 
         async function invalidarVisitaAutomatica(idVisita, distancia) {
-            if (invalidando) return; // doble disparo del watchPosition
+            if (invalidando) return;
             invalidando = true;
             detenerMonitorGPS();
 
@@ -2918,15 +2981,37 @@
 
         // ── INIT ─────────────────────────────────────────────────────
         window.onload = async function() {
-            // FIX: Mostrar PIN inmediatamente antes de cargar datos
             document.getElementById('pin-screen').classList.add('show');
 
-            // Mostrar bottom nav en móvil
             if (window.innerWidth <= 640) {
                 document.getElementById('bottom-nav-bar').style.display = 'block';
             }
             await cargarSelects();
             await actualizarKPI();
+
+            // ── Recuperar visita activa si la app se reinició o minimizó ──
+            const sesion = leerVisitaActivaSesion();
+            if (sesion && sesion.id && sesion.lat && sesion.lon) {
+                try {
+                    const datos = await sbFetch('visitas?id=eq.' + sesion.id + '&select=estatus');
+                    if (datos && datos.length > 0 && datos[0].estatus === 'En Proceso') {
+                        visitaActivaId  = sesion.id;
+                        visitaActivaLat = sesion.lat;
+                        visitaActivaLon = sesion.lon;
+                        invalidando     = false;
+                        document.getElementById('visita-activa-chip').classList.add('show');
+                        await pedirWakeLock();
+                        await pedirPermisoNotificaciones();
+                        _arrancarWatchYInterval();
+                        setTimeout(() => verificarPosicionAhora(), 2000);
+                    } else {
+                        borrarVisitaActivaSesion();
+                    }
+                } catch(e) {
+                    console.warn('No se pudo verificar visita activa al recargar:', e.message);
+                    borrarVisitaActivaSesion();
+                }
+            }
         };
     </script>
 
