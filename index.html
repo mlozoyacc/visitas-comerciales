@@ -1011,70 +1011,133 @@
                 </div>
             </div>
 
-            <!-- PASO 1: Productos -->
+            <!-- PASO 1: Tabla de productos por línea -->
             <div class="card">
-                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">1 · ¿Qué producto compra el cliente?</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <label id="btn-galvanizada" onclick="toggleProducto('galvanizada')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
-                        <input type="checkbox" id="prod-galvanizada" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Lámina Galvanizada
-                    </label>
-                    <label id="btn-negra" onclick="toggleProducto('negra')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
-                        <input type="checkbox" id="prod-negra" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Lámina Negra
-                    </label>
-                    <label id="btn-tuberia" onclick="toggleProducto('tuberia')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
-                        <input type="checkbox" id="prod-tuberia" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Tubería
-                    </label>
-                    <label id="btn-perfiles" onclick="toggleProducto('perfiles')" style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all 0.15s;font-size:0.88rem;font-weight:600;color:var(--text)">
-                        <input type="checkbox" id="prod-perfiles" style="accent-color:var(--accent);width:18px;height:18px;flex-shrink:0"> Perfiles
-                    </label>
+                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">1 · Información por línea de producto</div>
+
+                <style>
+                    .prod-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+                    .prod-table th { background:var(--accent); color:#fff; padding:9px 10px; text-align:center; font-weight:600; border:1px solid var(--border); white-space:nowrap; }
+                    .prod-table td { padding:8px 10px; border:1px solid var(--border); vertical-align:middle; color:var(--text); }
+                    .prod-table tr:nth-child(even) td { background:var(--surface2); }
+                    .prod-table tr:nth-child(odd) td { background:var(--surface); }
+                    .prod-table td:first-child { font-weight:600; white-space:nowrap; min-width:120px; }
+                    .prod-table td.sep-row { background:#f0f4fa !important; color:var(--text-muted); font-style:italic; font-size:0.75rem; text-align:center; padding:5px 8px; }
+                    .prod-input-num { width:100%; max-width:110px; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.82rem; padding:6px 8px; text-align:center; outline:none; }
+                    .prod-input-num:focus { border-color:var(--accent); }
+                    .prod-select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.78rem; padding:6px 8px; outline:none; cursor:pointer; }
+                    .prod-select:focus { border-color:var(--accent); }
+                    .prod-check-wrap { display:flex; align-items:center; justify-content:center; }
+                    .prod-check { accent-color:var(--accent); width:18px; height:18px; cursor:pointer; }
+                    .prod-na { color:var(--text-dim); text-align:center; font-size:0.75rem; background:#f7f9fc !important; }
+                    .prod-check-wrap.disabled { opacity:0.3; pointer-events:none; }
+                    @media(max-width:640px){ .prod-table { font-size:0.72rem; } .prod-table th, .prod-table td { padding:6px 5px; } .prod-input-num { max-width:70px; font-size:0.72rem; } }
+                </style>
+
+                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+                    <table class="prod-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;min-width:130px"></th>
+                                <th>Lámina Negra</th>
+                                <th>Recubiertos</th>
+                                <th>Perfiles y Tubos</th>
+                                <th>HSS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>¿Cuál es el potencial de compra (tons.)?</td>
+                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-negra" min="0" max="9999" placeholder="0" /></td>
+                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-recubiertos" min="0" max="9999" placeholder="0" /></td>
+                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-perfiles" min="0" max="9999" placeholder="0" /></td>
+                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-hss" min="0" max="9999" placeholder="0" /></td>
+                            </tr>
+                            <tr>
+                                <td>¿Cuál es su proveedor principal?</td>
+                                <td>
+                                    <select class="prod-select" id="prov-negra" onchange="actualizarCheckboxLinea('negra')">
+                                        <option value="">—</option>
+                                        <option value="Aliacer">Aliacer</option>
+                                        <option value="Ternium">Ternium</option>
+                                        <option value="Deacero">Deacero</option>
+                                        <option value="Villacero">Villacero</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="prod-select" id="prov-recubiertos" onchange="actualizarCheckboxLinea('recubiertos')">
+                                        <option value="">—</option>
+                                        <option value="Aliacer">Aliacer</option>
+                                        <option value="GALVASID">GALVASID</option>
+                                        <option value="Ternium">Ternium</option>
+                                        <option value="Villacero">Villacero</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="prod-select" id="prov-perfiles" onchange="actualizarCheckboxLinea('perfiles')">
+                                        <option value="">—</option>
+                                        <option value="Aliacer">Aliacer</option>
+                                        <option value="Perfiles LM">Perfiles LM</option>
+                                        <option value="Ternium">Ternium</option>
+                                        <option value="Villacero">Villacero</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="prod-select" id="prov-hss" onchange="actualizarCheckboxLinea('hss')">
+                                        <option value="">—</option>
+                                        <option value="Aliacer">Aliacer</option>
+                                        <option value="Aceros del Toro">Aceros del Toro</option>
+                                        <option value="Ternium">Ternium</option>
+                                        <option value="Villacero">Villacero</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="sep-row">Si no somos su proveedor principal, ¿cuál es el motivo?</td>
+                            </tr>
+                            <tr>
+                                <td>• Precio</td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-negra"><input type="checkbox" class="prod-check" id="chk-precio-negra"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-recubiertos"><input type="checkbox" class="prod-check" id="chk-precio-recubiertos"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-perfiles"><input type="checkbox" class="prod-check" id="chk-precio-perfiles"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-hss"><input type="checkbox" class="prod-check" id="chk-precio-hss"></div></td>
+                            </tr>
+                            <tr>
+                                <td>• Existencia</td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-negra"><input type="checkbox" class="prod-check" id="chk-existencia-negra"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-recubiertos"><input type="checkbox" class="prod-check" id="chk-existencia-recubiertos"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-perfiles"><input type="checkbox" class="prod-check" id="chk-existencia-perfiles"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-hss"><input type="checkbox" class="prod-check" id="chk-existencia-hss"></div></td>
+                            </tr>
+                            <tr>
+                                <td>• Tiempo de entrega</td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-negra"><input type="checkbox" class="prod-check" id="chk-entrega-negra"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-recubiertos"><input type="checkbox" class="prod-check" id="chk-entrega-recubiertos"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-perfiles"><input type="checkbox" class="prod-check" id="chk-entrega-perfiles"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-hss"><input type="checkbox" class="prod-check" id="chk-entrega-hss"></div></td>
+                            </tr>
+                            <tr>
+                                <td>• Créditos</td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-negra"><input type="checkbox" class="prod-check" id="chk-creditos-negra"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-recubiertos"><input type="checkbox" class="prod-check" id="chk-creditos-recubiertos"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-perfiles"><input type="checkbox" class="prod-check" id="chk-creditos-perfiles"></div></td>
+                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-hss"><input type="checkbox" class="prod-check" id="chk-creditos-hss"></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- PASO 2: ¿Nos considera proveedor? -->
+            <!-- PASO 2: Conclusiones -->
             <div class="card">
-                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">2 · ¿Nos considera como proveedor?</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <button id="btn-proveedor-si" onclick="seleccionarProveedor('si')" style="padding:18px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.15s">
-                        ✅ SÍ
-                    </button>
-                    <button id="btn-proveedor-no" onclick="seleccionarProveedor('no')" style="padding:18px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.15s">
-                        ❌ NO
-                    </button>
-                </div>
-                <div id="razon-no-proveedor" style="margin-top:14px">
-                    <div class="form-group">
-                        <label id="razon-no-label">Comentarios de la visita con el proveedor</label>
-                        <textarea id="razon-no" placeholder="Escribe o graba tus comentarios..." rows="3" style="resize:none"></textarea>
-                        <div class="btn-actions">
-                            <button class="btn btn-danger" id="grabarBtnRazon" onclick="grabarVozCampo('razon-no', 'grabarBtnRazon')">🎙 Grabar Voz</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">2 · Conclusiones</div>
 
-            <!-- PASO 3: Resultado -->
-            <div class="card">
-                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">3 · Resultado de la visita</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <button id="btn-res-exitosa" onclick="seleccionarResultado('Exitosa')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
-                        🟢 Exitosa
-                    </button>
-                    <button id="btn-res-seguimiento" onclick="seleccionarResultado('Requiere seguimiento')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
-                        🟡 Seguimiento
-                    </button>
-                    <button id="btn-res-sinacuerdo" onclick="seleccionarResultado('Sin acuerdo')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
-                        🔴 Sin acuerdo
-                    </button>
-                    <button id="btn-res-cancelada" onclick="seleccionarResultado('Cancelada por cliente')" style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-family:Sora,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s">
-                        ⚫ Cancelada
-                    </button>
-                </div>
-                <input type="hidden" id="resultado" value="" />
-            </div>
-
-            <!-- PASO 4: Conclusiones -->
-            <div class="card">
-                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">4 · Conclusiones</div>
+            <!-- campos ocultos -->
+            <input type="hidden" id="resultado" value="" />
                 <div class="form-group">
                     <textarea id="conclusiones" placeholder="¿Qué pasó en la visita? Habla o escribe..." style="min-height:100px;resize:none"></textarea>
                     <div class="btn-actions">
@@ -1873,143 +1936,78 @@
             }
         }
 
-        // ── HELPERS NUEVO FORMULARIO CERRAR ─────────────────────────
-        let resultadoSeleccionado = '';
-        let proveedorSeleccionado = '';
+        // ── HELPERS FORMULARIO CERRAR ────────────────────────────────
 
-        function toggleProducto(id) {
-            const cb  = document.getElementById('prod-' + id);
-            const btn = document.getElementById('btn-' + id);
-            cb.checked = !cb.checked;
-            btn.style.borderColor  = cb.checked ? 'var(--accent)' : 'var(--border)';
-            btn.style.background   = cb.checked ? 'rgba(59,130,246,0.12)' : 'var(--surface2)';
-        }
+        // Todos los checkboxes de cada línea (ahora es la misma lista para todas)
+        const RAZONES = ['precio', 'existencia', 'entrega', 'creditos'];
+        const LINEAS  = ['negra', 'recubiertos', 'perfiles', 'hss'];
 
-        function seleccionarProveedor(val) {
-            proveedorSeleccionado = val;
-            const si    = document.getElementById('btn-proveedor-si');
-            const no    = document.getElementById('btn-proveedor-no');
-            const label = document.getElementById('razon-no-label');
-            if (val === 'si') {
-                si.style.background  = 'rgba(16,185,129,0.2)';
-                si.style.borderColor = 'var(--success)';
-                si.style.color       = 'var(--success)';
-                no.style.background  = 'var(--surface2)';
-                no.style.borderColor = 'var(--border)';
-                no.style.color       = 'var(--text)';
-                if (label) label.textContent = 'Comentarios de la visita con el proveedor';
-            } else {
-                no.style.background  = 'rgba(239,68,68,0.2)';
-                no.style.borderColor = 'var(--danger)';
-                no.style.color       = 'var(--danger)';
-                si.style.background  = 'var(--surface2)';
-                si.style.borderColor = 'var(--border)';
-                si.style.color       = 'var(--text)';
-                if (label) label.textContent = '¿Por qué no nos considera como proveedor? *';
-            }
-        }
-
-        function seleccionarResultado(val) {
-            resultadoSeleccionado = val;
-            document.getElementById('resultado').value = val;
-            const map = {
-                'Exitosa':               'btn-res-exitosa',
-                'Requiere seguimiento':  'btn-res-seguimiento',
-                'Sin acuerdo':           'btn-res-sinacuerdo',
-                'Cancelada por cliente': 'btn-res-cancelada'
-            };
-            const colors = {
-                'Exitosa':               ['rgba(16,185,129,0.2)', 'var(--success)'],
-                'Requiere seguimiento':  ['rgba(245,158,11,0.2)',  'var(--warning)'],
-                'Sin acuerdo':           ['rgba(239,68,68,0.2)',   'var(--danger)'],
-                'Cancelada por cliente': ['rgba(100,100,100,0.2)', '#888']
-            };
-            Object.entries(map).forEach(([k, btnId]) => {
-                const btn = document.getElementById(btnId);
-                if (!btn) return;
-                if (k === val) {
-                    btn.style.background  = colors[k][0];
-                    btn.style.borderColor = colors[k][1];
-                    btn.style.color       = colors[k][1];
+        function actualizarCheckboxLinea(linea) {
+            const prov = document.getElementById('prov-' + linea)?.value || '';
+            // Desactivar si es Aliacer (somos nosotros) O si no se ha seleccionado proveedor
+            const desactivar = prov === 'Aliacer' || prov === '';
+            RAZONES.forEach(razon => {
+                const chk  = document.getElementById('chk-' + razon + '-' + linea);
+                const wrap = document.getElementById('wrap-' + razon + '-' + linea);
+                if (!chk) return;
+                if (desactivar) {
+                    chk.checked  = false;
+                    chk.disabled = true;
+                    if (wrap) wrap.classList.add('disabled');
                 } else {
-                    btn.style.background  = 'var(--surface2)';
-                    btn.style.borderColor = 'var(--border)';
-                    btn.style.color       = 'var(--text)';
+                    chk.disabled = false;
+                    if (wrap) wrap.classList.remove('disabled');
                 }
             });
         }
 
         function limpiarFormularioCerrar() {
-            // Reset productos
-            ['galvanizada','negra','tuberia','perfiles'].forEach(id => {
-                const cb  = document.getElementById('prod-' + id);
-                const btn = document.getElementById('btn-' + id);
-                if (cb) cb.checked = false;
-                if (btn) { btn.style.borderColor = 'var(--border)'; btn.style.background = 'var(--surface2)'; }
+            LINEAS.forEach(linea => {
+                const pot  = document.getElementById('pot-' + linea);
+                const prov = document.getElementById('prov-' + linea);
+                if (pot)  pot.value = '';
+                if (prov) { prov.value = ''; actualizarCheckboxLinea(linea); }
             });
-            // Reset proveedor
-            proveedorSeleccionado = '';
-            ['btn-proveedor-si','btn-proveedor-no'].forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) { btn.style.background = 'var(--surface2)'; btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text)'; }
+            RAZONES.forEach(razon => {
+                LINEAS.forEach(linea => {
+                    const chk = document.getElementById('chk-' + razon + '-' + linea);
+                    if (chk) chk.checked = false;
+                });
             });
-            document.getElementById('razon-no-label') && (document.getElementById('razon-no-label').textContent = 'Comentarios de la visita con el proveedor');
-            document.getElementById('razon-no') && (document.getElementById('razon-no').value = '');
-            // Reset resultado
-            resultadoSeleccionado = '';
-            document.getElementById('resultado').value = '';
-            ['btn-res-exitosa','btn-res-seguimiento','btn-res-sinacuerdo','btn-res-cancelada'].forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) { btn.style.background = 'var(--surface2)'; btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text)'; }
-            });
-            // Reset conclusiones
             document.getElementById('conclusiones').value = '';
         }
 
-        // ── CERRAR VISITA (PATCH estatus + conclusiones + hora_fin + nuevos campos) ──
+        // ── CERRAR VISITA ────────────────────────────────────────────
         async function cerrarVisita() {
             const visitaId     = document.getElementById('cerrar-visita').value;
             const conclusiones = document.getElementById('conclusiones').value.trim();
-            const resultado    = document.getElementById('resultado').value;
 
-            // Leer productos seleccionados
+            // ── Leer tabla de productos ──────────────────────────────
+            const lineas = ['negra','recubiertos','perfiles','hss'];
+            const nombresLinea = { negra:'Lámina Negra', recubiertos:'Recubiertos', perfiles:'Perfiles y Tubos', hss:'HSS' };
+            const tablaProductos = {};
             const productosArr = [];
-            if (document.getElementById('prod-galvanizada') && document.getElementById('prod-galvanizada').checked) productosArr.push('Lámina Galvanizada');
-            if (document.getElementById('prod-negra') && document.getElementById('prod-negra').checked)             productosArr.push('Lámina Negra');
-            if (document.getElementById('prod-tuberia') && document.getElementById('prod-tuberia').checked)         productosArr.push('Tubería');
-            if (document.getElementById('prod-perfiles') && document.getElementById('prod-perfiles').checked)       productosArr.push('Perfiles');
+
+            lineas.forEach(linea => {
+                const pot  = parseFloat(document.getElementById('pot-' + linea)?.value) || 0;
+                const prov = document.getElementById('prov-' + linea)?.value || '';
+                // Si no se seleccionó proveedor, guardar "N/A"
+                const provGuardar = prov === '' ? 'N/A' : prov;
+                if (pot > 0 || prov) productosArr.push(nombresLinea[linea]);
+                tablaProductos[linea] = { potencial: pot, proveedor: provGuardar };
+            });
+            tablaProductos.razones = {};
+            RAZONES.forEach(razon => {
+                LINEAS.forEach(linea => {
+                    tablaProductos.razones[razon + '_' + linea] =
+                        document.getElementById('chk-' + razon + '-' + linea)?.checked || false;
+                });
+            });
             const productosTratados = productosArr.join(', ');
-
-            // Leer si nos considera proveedor
-            const esProveedor  = proveedorSeleccionado === 'si' ? 'Sí' : proveedorSeleccionado === 'no' ? 'No' : '';
-            const razonNo      = document.getElementById('razon-no') ? document.getElementById('razon-no').value.trim() : '';
-            const competencia  = '';
-
-            const probCierre      = '';
-            const satisfaccion    = '';
-            const proximaAccion   = '';
-            const fechaCompromiso = '';
-            const disparadores    = [];
 
             // Validaciones
             if (!visitaId) {
                 alert('Selecciona la visita que deseas cerrar.');
-                return;
-            }
-            if (productosArr.length === 0) {
-                alert('Selecciona al menos un producto que compra el cliente.');
-                return;
-            }
-            if (!proveedorSeleccionado) {
-                alert('Indica si el cliente nos considera como proveedor.');
-                return;
-            }
-            if (proveedorSeleccionado === 'no' && !razonNo) {
-                alert('Explica por qué el cliente no nos considera como proveedor.');
-                return;
-            }
-            if (!resultado) {
-                alert('Selecciona el resultado de la visita.');
                 return;
             }
             if (!conclusiones) {
@@ -2049,10 +2047,11 @@
                         estatus: 'Cerrada',
                         conclusiones,
                         hora_fin: horaFin,
-                        resultado: resultado || null,
-                        es_proveedor: esProveedor || null,
-                        comentario_proveedor: razonNo || null,
+                        resultado: null,
+                        es_proveedor: null,
+                        comentario_proveedor: null,
                         productos_tratados: productosTratados || null,
+                        tabla_productos: tablaProductos,
                         prob_cierre: null,
                         satisfaccion: null,
                         competencia: null,
@@ -2149,20 +2148,15 @@
         const VISITAS_COLS = [
             { key: 'vendedor',            label: 'Vendedor' },
             { key: 'cliente',             label: 'Cliente' },
-            { key: 'tipo_cliente',        label: 'Tipo Cliente' },
-            { key: 'tipo_visita',         label: 'Tipo Visita' },
-            { key: 'estado_cliente',      label: 'Estado Cliente' },
-            { key: 'contacto_nombre',     label: 'Contacto' },
-            { key: 'contacto_puesto',     label: 'Puesto' },
-            { key: 'objetivo',            label: 'Objetivo' },
+            { key: 'tipo_cliente',        label: 'Tipo' },
             { key: 'hora_visita',         label: 'Inicio' },
             { key: 'hora_fin',            label: 'Fin' },
             { key: '_duracion',           label: 'Duración' },
             { key: 'estatus',             label: 'Estatus' },
-            { key: 'resultado',           label: 'Resultado' },
-            { key: 'productos_tratados',  label: 'Productos' },
-            { key: 'es_proveedor',        label: '¿Nos considera?' },
-            { key: 'comentario_proveedor',label: 'Comentario Proveedor' },
+            { key: '_tp_negra',           label: 'Lámina Negra' },
+            { key: '_tp_recubiertos',     label: 'Recubiertos' },
+            { key: '_tp_perfiles',        label: 'Perfiles y Tubos' },
+            { key: '_tp_hss',             label: 'HSS' },
             { key: 'conclusiones',        label: 'Conclusiones' },
             { key: 'ubicacion',           label: 'Ubicación' },
         ];
@@ -2173,6 +2167,26 @@
                 const diff = new Date(v.hora_fin) - new Date(v.hora_visita);
                 if (diff <= 0) return '';
                 return String(Math.floor(diff/3600000)).padStart(2,'0') + ':' + String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+            }
+            // Columnas de tabla_productos: _tp_negra, _tp_recubiertos, _tp_perfiles, _tp_hss
+            if (key.startsWith('_tp_')) {
+                const linea = key.slice(4); // negra | recubiertos | perfiles | hss
+                const tp = v.tabla_productos;
+                if (!tp) return '—';
+                const obj = typeof tp === 'string' ? JSON.parse(tp) : tp;
+                const d = obj[linea];
+                if (!d) return '—';
+                const pot  = d.potencial ? d.potencial + ' t' : '';
+                const prov = d.proveedor || '';
+                // razones marcadas para esta línea
+                const razones = obj.razones || {};
+                const motivos = [];
+                if (razones['precio_'    + linea]) motivos.push('Precio');
+                if (razones['existencia_'+ linea]) motivos.push('Existencia');
+                if (razones['entrega_'   + linea]) motivos.push('T.Entrega');
+                if (razones['creditos_'  + linea]) motivos.push('Créditos');
+                const partes = [pot, prov, motivos.length ? '⚠ ' + motivos.join(', ') : ''].filter(Boolean);
+                return partes.join(' · ') || '—';
             }
             return v[key] ?? '';
         }
@@ -2277,6 +2291,9 @@
                         .vf-opcion:hover { background:rgba(59,130,246,0.12); color:var(--accent); }
                         .vf-limpiar { color:var(--danger) !important; border-bottom:1px solid var(--border); }
                         .vf-count { font-size:0.72rem; color:var(--text-muted); padding:6px 12px; border-top:1px solid var(--border); background:var(--surface2); }
+                        #visitas-tabla { table-layout:auto; width:max-content; min-width:100%; }
+                        #visitas-tabla td { white-space:nowrap; overflow:visible; text-overflow:clip; }
+                        #visitas-tabla td.vf-td-wrap { white-space:normal; max-width:280px; }
                     `;
                     document.head.appendChild(st);
                 }
@@ -2377,28 +2394,23 @@
             }
 
             tbody.innerHTML = rows.map(v => {
-                const badgeEstatus   = v.estatus === 'Cerrada' ? 'badge-green' : v.estatus === 'Visita No Válida' ? 'badge-red' : 'badge-yellow';
-                const badgeResultado = v.resultado === 'Exitosa' ? 'badge-green' : v.resultado === 'Requiere seguimiento' ? 'badge-yellow' : v.resultado ? 'badge-red' : '';
+                const badgeEstatus = v.estatus === 'Cerrada' ? 'badge-green' : v.estatus === 'Visita No Válida' ? 'badge-red' : 'badge-yellow';
                 const duracion = visitaGetVal(v, '_duracion') || '—';
+                const lineas = ['_tp_negra','_tp_recubiertos','_tp_perfiles','_tp_hss'];
                 return `<tr>
                     <td>${escHtml(v.vendedor||'—')}</td>
                     <td>${escHtml(v.cliente||'—')}</td>
-                    <td>${v.tipo_cliente === 'PROSPECTO' ? '<span class="badge badge-yellow">PROSPECTO</span>' : '<span class="badge badge-green">CLIENTE</span>'}</td>
-                    <td>${escHtml(v.tipo_visita||'—')}</td>
-                    <td>${escHtml(v.estado_cliente||'—')}</td>
-                    <td>${escHtml(v.contacto_nombre||'—')}</td>
-                    <td>${escHtml(v.contacto_puesto||'—')}</td>
-                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.objetivo||'')}">${escHtml(v.objetivo||'—')}</td>
+                    <td>${v.tipo_cliente === 'PROSPECTO' ? '<span class="badge badge-yellow">PROSP.</span>' : '<span class="badge badge-green">CLIENTE</span>'}</td>
                     <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${escHtml((v.hora_visita||'').replace('T',' ').slice(0,16))}</td>
                     <td style="font-family:'DM Mono',monospace;font-size:0.72rem">${v.hora_fin ? escHtml(v.hora_fin.replace('T',' ').slice(0,16)) : '—'}</td>
                     <td style="font-family:'DM Mono',monospace;font-size:0.72rem;text-align:center"><span class="badge ${v.hora_fin ? 'badge-green' : ''}" style="${!v.hora_fin?'color:var(--text-dim)':''}">${duracion}</span></td>
                     <td><span class="badge ${badgeEstatus}">${escHtml(v.estatus||'—')}</span></td>
-                    <td><span class="${v.resultado ? 'badge '+badgeResultado : ''}">${escHtml(v.resultado||'—')}</span></td>
-                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.productos_tratados||'')}">${escHtml(v.productos_tratados||'—')}</td>
-                    <td style="text-align:center">${v.es_proveedor==='Sí'?'<span class="badge badge-green">Sí</span>':v.es_proveedor==='No'?'<span class="badge badge-red">No</span>':'—'}</td>
-                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.comentario_proveedor||'')}">${escHtml(v.comentario_proveedor||'—')}</td>
-                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.conclusiones||'')}">${escHtml(v.conclusiones||'—')}</td>
-                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${escHtml(v.ubicacion||'')}">${escHtml(v.ubicacion||'—')}</td>
+                    ${lineas.map(lk => {
+                        const txt = visitaGetVal(v, lk);
+                        return `<td style="font-size:0.75rem">${escHtml(txt)}</td>`;
+                    }).join('')}
+                    <td class="vf-td-wrap">${escHtml(v.conclusiones||'—')}</td>
+                    <td class="vf-td-wrap">${escHtml(v.ubicacion||'—')}</td>
                 </tr>`;
             }).join('');
         }
@@ -2875,6 +2887,9 @@
             }
             await cargarSelects();
             await actualizarKPI();
+
+            // Inicializar checkboxes de la tabla: desactivados hasta que se elija proveedor
+            LINEAS.forEach(linea => actualizarCheckboxLinea(linea));
         };
     </script>
 
