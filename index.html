@@ -1016,45 +1016,45 @@
                 <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">1 · Información por línea de producto</div>
 
                 <style>
-                    .prod-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
-                    .prod-table th { background:var(--accent); color:#fff; padding:9px 10px; text-align:center; font-weight:600; border:1px solid var(--border); white-space:nowrap; }
-                    .prod-table td { padding:8px 10px; border:1px solid var(--border); vertical-align:middle; color:var(--text); }
+                    .prod-table { width:100%; border-collapse:collapse; font-size:0.72rem; }
+                    .prod-table th { background:var(--accent); color:#fff; padding:7px 6px; text-align:center; font-weight:600; border:1px solid var(--border); white-space:normal; line-height:1.3; font-size:0.7rem; min-width:90px; }
+                    .prod-table td { padding:6px 6px; border:1px solid var(--border); vertical-align:middle; color:var(--text); }
                     .prod-table tr:nth-child(even) td { background:var(--surface2); }
                     .prod-table tr:nth-child(odd) td { background:var(--surface); }
-                    .prod-table td:first-child { font-weight:600; white-space:nowrap; min-width:120px; }
-                    .prod-table td.sep-row { background:#f0f4fa !important; color:var(--text-muted); font-style:italic; font-size:0.75rem; text-align:center; padding:5px 8px; }
-                    .prod-input-num { width:100%; max-width:110px; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.82rem; padding:6px 8px; text-align:center; outline:none; }
+                    .prod-table td:first-child { font-weight:600; white-space:normal; min-width:80px; line-height:1.3; font-size:0.7rem; }
+                    .prod-table td.sep-row { background:#f0f4fa !important; color:var(--text-muted); font-style:italic; font-size:0.66rem; text-align:center; padding:4px 6px; }
+                    .prod-input-num { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:5px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.7rem; padding:5px 4px; text-align:center; outline:none; }
                     .prod-input-num:focus { border-color:var(--accent); }
-                    .prod-select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.78rem; padding:6px 8px; outline:none; cursor:pointer; }
+                    .prod-select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:5px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.7rem; padding:5px 2px; outline:none; cursor:pointer; }
                     .prod-select:focus { border-color:var(--accent); }
                     .prod-check-wrap { display:flex; align-items:center; justify-content:center; }
-                    .prod-check { accent-color:var(--accent); width:18px; height:18px; cursor:pointer; }
-                    .prod-na { color:var(--text-dim); text-align:center; font-size:0.75rem; background:#f7f9fc !important; }
+                    .prod-check { accent-color:var(--accent); width:16px; height:16px; cursor:pointer; }
+                    .prod-na { color:var(--text-dim); text-align:center; font-size:0.66rem; background:#f7f9fc !important; }
                     .prod-check-wrap.disabled { opacity:0.3; pointer-events:none; }
-                    @media(max-width:640px){ .prod-table { font-size:0.72rem; } .prod-table th, .prod-table td { padding:6px 5px; } .prod-input-num { max-width:70px; font-size:0.72rem; } }
+                    @media(max-width:640px){ .prod-table { font-size:0.66rem; } .prod-table th, .prod-table td { padding:5px 4px; } }
                 </style>
 
                 <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
                     <table class="prod-table">
                         <thead>
                             <tr>
-                                <th style="text-align:left;min-width:130px"></th>
-                                <th>Lámina Negra</th>
+                                <th style="text-align:left;min-width:75px"></th>
+                                <th>Lámina<br>Negra</th>
                                 <th>Recubiertos</th>
-                                <th>Perfiles y Tubos</th>
+                                <th>Perfiles y<br>Tubos</th>
                                 <th>HSS</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>¿Cuál es el potencial de compra (tons.)?</td>
+                                <td>Potencial<br>de compra<br>(tons.)</td>
                                 <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-negra" min="0" max="9999" placeholder="0" /></td>
                                 <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-recubiertos" min="0" max="9999" placeholder="0" /></td>
                                 <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-perfiles" min="0" max="9999" placeholder="0" /></td>
                                 <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-hss" min="0" max="9999" placeholder="0" /></td>
                             </tr>
                             <tr>
-                                <td>¿Cuál es su proveedor principal?</td>
+                                <td>¿Proveedor<br>principal?</td>
                                 <td>
                                     <select class="prod-select" id="prov-negra" onchange="actualizarCheckboxLinea('negra')">
                                         <option value="">—</option>
@@ -1114,7 +1114,7 @@
                                 <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-hss"><input type="checkbox" class="prod-check" id="chk-existencia-hss"></div></td>
                             </tr>
                             <tr>
-                                <td>• Tiempo de entrega</td>
+                                <td>• Entrega</td>
                                 <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-negra"><input type="checkbox" class="prod-check" id="chk-entrega-negra"></div></td>
                                 <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-recubiertos"><input type="checkbox" class="prod-check" id="chk-entrega-recubiertos"></div></td>
                                 <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-perfiles"><input type="checkbox" class="prod-check" id="chk-entrega-perfiles"></div></td>
@@ -2896,7 +2896,7 @@
     <script>
         // ── VERSIÓN DE LA APP ─────────────────────────────────────────
         // ⚠️ IMPORTANTE: incrementa este número cada vez que hagas deploy
-        const APP_VERSION = '1.1';
+        const APP_VERSION = '1.2';
 
         // ── SERVICE WORKER ───────────────────────────────────────────
         if ('serviceWorker' in navigator) {
