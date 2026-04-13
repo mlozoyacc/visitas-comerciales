@@ -588,7 +588,7 @@
             .bottom-nav { display: block; }
 
             /* Main con padding inferior para bottom nav */
-            .main { padding: 16px 14px 90px; }
+            .main { padding: 16px 14px 110px; }
 
             /* Formulario una sola columna */
             .form-grid { grid-template-columns: 1fr; gap: 14px; }
@@ -908,19 +908,19 @@
     </div>
 
     <!-- BOTTOM NAV (móvil) -->
-    <div id="bottom-nav-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#093C71;border-top:1px solid #072d56;z-index:200;padding:0 0 env(safe-area-inset-bottom,0px)">
+    <div id="bottom-nav-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#093C71;border-top:1px solid #072d56;z-index:9000;padding:0 0 env(safe-area-inset-bottom,0px)">
         <div style="display:flex;justify-content:space-around">
-            <button id="btab-iniciar" onclick="showTab('iniciar')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:#FCFDFE;font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:rgba(255,255,255,0.15);touch-action:manipulation">
-                <span style="font-size:1.4rem;line-height:1">▶️</span>Iniciar
+            <button id="btab-iniciar" ontouchstart="showTab('iniciar')" onclick="showTab('iniciar')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:#FCFDFE;font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;z-index:1">
+                <span style="font-size:1.4rem;line-height:1;pointer-events:none">▶️</span><span style="pointer-events:none">Iniciar</span>
             </button>
-            <button id="btab-cerrar" onclick="showTab('cerrar')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:rgba(180,210,240,0.65);font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:rgba(255,255,255,0.15);touch-action:manipulation">
-                <span style="font-size:1.4rem;line-height:1">✅</span>Cerrar
+            <button id="btab-cerrar" ontouchstart="showTab('cerrar')" onclick="showTab('cerrar')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:rgba(180,210,240,0.65);font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;z-index:1">
+                <span style="font-size:1.4rem;line-height:1;pointer-events:none">✅</span><span style="pointer-events:none">Cerrar</span>
             </button>
-            <button id="btab-consultas" onclick="showTab('consultas')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:rgba(180,210,240,0.65);font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:rgba(255,255,255,0.15);touch-action:manipulation">
-                <span style="font-size:1.4rem;line-height:1">🔍</span>Consultas
+            <button id="btab-consultas" ontouchstart="showTab('consultas')" onclick="showTab('consultas')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:rgba(180,210,240,0.65);font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;z-index:1">
+                <span style="font-size:1.4rem;line-height:1;pointer-events:none">🔍</span><span style="pointer-events:none">Consultas</span>
             </button>
-            <button id="btab-kpi" onclick="showTab('kpi')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:rgba(180,210,240,0.65);font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:rgba(255,255,255,0.15);touch-action:manipulation">
-                <span style="font-size:1.4rem;line-height:1">📊</span>KPIs
+            <button id="btab-kpi" ontouchstart="showTab('kpi')" onclick="showTab('kpi')" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 4px 14px;min-height:64px;background:none;border:none;color:rgba(180,210,240,0.65);font-family:Sora,sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;z-index:1">
+                <span style="font-size:1.4rem;line-height:1;pointer-events:none">📊</span><span style="pointer-events:none">KPIs</span>
             </button>
         </div>
     </div>
@@ -2896,7 +2896,7 @@
     <script>
         // ── VERSIÓN DE LA APP ─────────────────────────────────────────
         // ⚠️ IMPORTANTE: incrementa este número cada vez que hagas deploy
-        const APP_VERSION = '1.3';
+        const APP_VERSION = '1.2';
 
         // ── SERVICE WORKER ───────────────────────────────────────────
         if ('serviceWorker' in navigator) {
