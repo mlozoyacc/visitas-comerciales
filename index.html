@@ -726,18 +726,18 @@
             position: fixed;
             inset: 0;
             background: #FCFDFE;
-            z-index: 1000;
+            z-index: 1100;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 32px 24px;
+            justify-content: flex-start;
+            padding: 24px 24px 100px;
             overflow-y: auto;
         }
-        @media (max-height: 700px) {
+        @media (min-height: 750px) {
             #pin-screen {
-                justify-content: flex-start;
-                padding-top: 20px;
-                padding-bottom: 20px;
+                justify-content: center;
+                padding-top: 32px;
+                padding-bottom: 32px;
             }
         }
         #pin-screen.show { display: flex; }
@@ -759,13 +759,13 @@
         .pin-subtitle {
             font-size: 0.82rem;
             color: rgba(180,210,240,0.75);
-            margin-bottom: 32px;
+            margin-bottom: 20px;
             text-align: center;
         }
         .pin-dots {
             display: flex;
             gap: 16px;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
         .pin-dot {
             width: 16px; height: 16px;
@@ -794,7 +794,7 @@
             font-family: 'Sora', sans-serif;
             font-size: 1.3rem;
             font-weight: 600;
-            padding: 18px;
+            padding: 14px;
             cursor: pointer;
             transition: all 0.1s;
             text-align: center;
@@ -820,6 +820,12 @@
             color: var(--success);
             margin-bottom: 24px;
             text-align: center;
+        }
+        @media (max-width: 640px) {
+            #pin-screen img { height: 90px !important; }
+            .pin-title { font-size: 1.15rem; }
+            .pin-subtitle { margin-bottom: 14px; }
+            .pin-dots { margin-bottom: 14px; }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
