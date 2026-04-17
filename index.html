@@ -1025,170 +1025,313 @@
                 </div>
             </div>
 
-            <!-- PASO 1: Tabla de productos por línea -->
-            <div class="card">
-                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">1 · Información por línea de producto</div>
+            <!-- CSS encuesta por línea de producto -->
+            <style>
+                /* barra de progreso */
+                .enc-progress { height:4px; background:var(--border); border-radius:2px; margin-bottom:14px; }
+                .enc-pbar { height:4px; background:#093C71; border-radius:2px; transition:width 0.35s ease; }
+                /* pastillas de líneas */
+                .enc-pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+                .enc-pill { font-size:0.7rem; font-weight:600; padding:4px 11px; border-radius:20px; background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); transition:all 0.2s; }
+                .enc-pill.activa { background:#093C71; color:#fff; border-color:#093C71; }
+                .enc-pill.lista  { background:#e8f5ee; color:#0a6940; border-color:#0a6940; }
+                .enc-pill.omitida{ background:var(--surface2); color:var(--text-dim); border-color:var(--border); text-decoration:line-through; opacity:0.55; }
+                /* pasos — solo uno visible a la vez */
+                .enc-step { display:none; animation:fadeIn 0.2s ease; }
+                .enc-step.activo { display:block; }
+                /* tarjeta de pregunta Sí/No */
+                .enc-pregunta { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:22px 20px; margin-bottom:0; }
+                .enc-step-lbl { font-size:0.7rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; }
+                .enc-titulo { font-size:1rem; font-weight:700; color:var(--text); margin:0 0 4px; }
+                .enc-sub { font-size:0.8rem; color:var(--text-muted); margin:0 0 18px; }
+                .enc-btn-row { display:flex; gap:10px; }
+                .enc-btn-si { flex:1; padding:12px; border-radius:10px; border:none; background:#093C71; color:#fff; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+                .enc-btn-si:hover { background:#0d4a8a; }
+                .enc-btn-no { flex:1; padding:12px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); font-family:'Sora',sans-serif; font-size:0.875rem; cursor:pointer; transition:background 0.15s; }
+                .enc-btn-no:hover { background:var(--surface2); }
+                /* formulario de la línea */
+                .enc-form-card { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:12px; }
+                .enc-form-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+                .enc-badge { background:#093C71; color:#fff; border-radius:8px; padding:4px 14px; font-size:0.78rem; font-weight:700; }
+                .enc-omitir { background:none; border:none; font-size:0.75rem; color:var(--text-muted); cursor:pointer; padding:0; }
+                /* campos reutilizados */
+                .prod-input-num { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.875rem; padding:10px 14px; outline:none; box-sizing:border-box; }
+                .prod-input-num:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(9,60,113,0.12); }
+                .prod-select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.875rem; padding:10px 14px; outline:none; cursor:pointer; box-sizing:border-box; }
+                .prod-select:focus { border-color:var(--accent); }
+                /* razones */
+                .razones-sep { font-size:0.7rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin:14px 0 8px; }
+                .razones-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+                .razon-item { display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; cursor:pointer; transition:background 0.15s; }
+                .razon-item:hover { background:#e8eef7; }
+                .razon-item input[type=checkbox] { accent-color:#093C71; width:15px; height:15px; flex-shrink:0; cursor:pointer; }
+                .razon-item label { font-size:0.8rem; font-weight:500; color:var(--text); cursor:pointer; line-height:1.2; }
+                .razon-item.disabled { opacity:0.3; pointer-events:none; }
+                @media(max-width:420px){ .razones-grid { grid-template-columns:1fr; } }
+                /* botón siguiente */
+                .enc-btn-sig { width:100%; padding:14px; border-radius:10px; border:none; background:#093C71; color:#fff; font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+                .enc-btn-sig:hover { background:#0d4a8a; }
+                /* resumen final */
+                .enc-resumen-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
+                .enc-resumen-row:last-child { border-bottom:none; }
+                .enc-resumen-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+                .enc-resumen-dot.cap { background:#0a6940; }
+                .enc-resumen-dot.om  { background:var(--text-dim); }
+            </style>
 
-                <style>
-                    .prod-table { width:100%; border-collapse:collapse; font-size:0.72rem; }
-                    .prod-table th { background:var(--accent); color:#fff; padding:7px 6px; text-align:center; font-weight:600; border:1px solid var(--border); white-space:normal; line-height:1.3; font-size:0.7rem; min-width:90px; }
-                    .prod-table td { padding:6px 6px; border:1px solid var(--border); vertical-align:middle; color:var(--text); }
-                    .prod-table tr:nth-child(even) td { background:var(--surface2); }
-                    .prod-table tr:nth-child(odd) td { background:var(--surface); }
-                    .prod-table td:first-child { font-weight:600; white-space:normal; min-width:80px; line-height:1.3; font-size:0.7rem; }
-                    .prod-table td.sep-row { background:#f0f4fa !important; color:var(--text-muted); font-style:italic; font-size:0.66rem; text-align:center; padding:4px 6px; }
-                    .prod-input-num { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:5px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.7rem; padding:5px 4px; text-align:center; outline:none; }
-                    .prod-input-num:focus { border-color:var(--accent); }
-                    .prod-select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:5px; color:var(--text); font-family:'Sora',sans-serif; font-size:0.7rem; padding:5px 2px; outline:none; cursor:pointer; }
-                    .prod-select:focus { border-color:var(--accent); }
-                    .prod-check-wrap { display:flex; align-items:center; justify-content:center; }
-                    .prod-check { accent-color:var(--accent); width:16px; height:16px; cursor:pointer; }
-                    .prod-na { color:var(--text-dim); text-align:center; font-size:0.66rem; background:#f7f9fc !important; }
-                    .prod-check-wrap.disabled { opacity:0.3; pointer-events:none; }
-                    @media(max-width:640px){ .prod-table { font-size:0.66rem; } .prod-table th, .prod-table td { padding:5px 4px; } }
-                </style>
+            <!-- ══ ENCUESTA POR LÍNEA DE PRODUCTO ══ -->
+            <div id="enc-wrapper">
 
-                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-                    <table class="prod-table">
-                        <thead>
-                            <tr>
-                                <th style="text-align:left;min-width:75px"></th>
-                                <th>Lámina<br>Negra</th>
-                                <th>Recubiertos</th>
-                                <th>Perfiles y<br>Tubos</th>
-                                <th>HSS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Potencial<br>de compra<br>(tons.)</td>
-                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-negra" min="0" max="9999" placeholder="0" /></td>
-                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-recubiertos" min="0" max="9999" placeholder="0" /></td>
-                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-perfiles" min="0" max="9999" placeholder="0" /></td>
-                                <td style="text-align:center"><input type="number" class="prod-input-num" id="pot-hss" min="0" max="9999" placeholder="0" /></td>
-                            </tr>
-                            <tr>
-                                <td>¿Proveedor<br>principal?</td>
-                                <td>
-                                    <select class="prod-select" id="prov-negra" onchange="actualizarCheckboxLinea('negra')">
-                                        <option value="">—</option>
-                                        <option value="Aliacer">Aliacer</option>
-                                        <option value="Ternium">Ternium</option>
-                                        <option value="Deacero">Deacero</option>
-                                        <option value="Villacero">Villacero</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="prod-select" id="prov-recubiertos" onchange="actualizarCheckboxLinea('recubiertos')">
-                                        <option value="">—</option>
-                                        <option value="Aliacer">Aliacer</option>
-                                        <option value="GALVASID">GALVASID</option>
-                                        <option value="Ternium">Ternium</option>
-                                        <option value="Villacero">Villacero</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="prod-select" id="prov-perfiles" onchange="actualizarCheckboxLinea('perfiles')">
-                                        <option value="">—</option>
-                                        <option value="Aliacer">Aliacer</option>
-                                        <option value="Perfiles LM">Perfiles LM</option>
-                                        <option value="Ternium">Ternium</option>
-                                        <option value="Villacero">Villacero</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="prod-select" id="prov-hss" onchange="actualizarCheckboxLinea('hss')">
-                                        <option value="">—</option>
-                                        <option value="Aliacer">Aliacer</option>
-                                        <option value="Aceros del Toro">Aceros del Toro</option>
-                                        <option value="Ternium">Ternium</option>
-                                        <option value="Villacero">Villacero</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="5" class="sep-row">Si no somos su proveedor principal, ¿cuál es el motivo?</td>
-                            </tr>
-                            <tr>
-                                <td>• Precio</td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-negra"><input type="checkbox" class="prod-check" id="chk-precio-negra"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-recubiertos"><input type="checkbox" class="prod-check" id="chk-precio-recubiertos"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-perfiles"><input type="checkbox" class="prod-check" id="chk-precio-perfiles"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-precio-hss"><input type="checkbox" class="prod-check" id="chk-precio-hss"></div></td>
-                            </tr>
-                            <tr>
-                                <td>• Existencia</td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-negra"><input type="checkbox" class="prod-check" id="chk-existencia-negra"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-recubiertos"><input type="checkbox" class="prod-check" id="chk-existencia-recubiertos"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-perfiles"><input type="checkbox" class="prod-check" id="chk-existencia-perfiles"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-existencia-hss"><input type="checkbox" class="prod-check" id="chk-existencia-hss"></div></td>
-                            </tr>
-                            <tr>
-                                <td>• Entrega</td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-negra"><input type="checkbox" class="prod-check" id="chk-entrega-negra"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-recubiertos"><input type="checkbox" class="prod-check" id="chk-entrega-recubiertos"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-perfiles"><input type="checkbox" class="prod-check" id="chk-entrega-perfiles"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-entrega-hss"><input type="checkbox" class="prod-check" id="chk-entrega-hss"></div></td>
-                            </tr>
-                            <tr>
-                                <td>• Créditos</td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-negra"><input type="checkbox" class="prod-check" id="chk-creditos-negra"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-recubiertos"><input type="checkbox" class="prod-check" id="chk-creditos-recubiertos"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-perfiles"><input type="checkbox" class="prod-check" id="chk-creditos-perfiles"></div></td>
-                                <td style="text-align:center"><div class="prod-check-wrap" id="wrap-creditos-hss"><input type="checkbox" class="prod-check" id="chk-creditos-hss"></div></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Barra de progreso + pastillas -->
+                <div class="enc-progress"><div class="enc-pbar" id="enc-pbar" style="width:0%"></div></div>
+                <div class="enc-pills">
+                    <div class="enc-pill activa" id="ep-recubiertos">Recubiertos</div>
+                    <div class="enc-pill" id="ep-perfiles">Perfiles</div>
+                    <div class="enc-pill" id="ep-negra">Lámina Negra</div>
+                    <div class="enc-pill" id="ep-hss">HSS</div>
                 </div>
-            </div>
 
-            <!-- PASO 2: Conclusiones -->
-            <div class="card">
-                <div class="section-title" style="margin-bottom:16px;font-size:0.88rem">2 · Conclusiones</div>
-
-            <!-- campos ocultos -->
-            <input type="hidden" id="resultado" value="" />
-                <div class="form-group">
-                    <textarea id="conclusiones" placeholder="¿Qué pasó en la visita? Habla o escribe..." style="min-height:100px;resize:none"></textarea>
-                    <div class="btn-actions">
-                        <button class="btn btn-danger" id="grabarBtn" onclick="grabarVoz()">🎙 Grabar Voz</button>
+                <!-- ── PASO 0: Pregunta Recubiertos ── -->
+                <div class="enc-step activo" id="enc-s0">
+                    <div class="enc-pregunta">
+                        <div class="enc-step-lbl">1 de 4 · Recubiertos</div>
+                        <p class="enc-titulo">¿Capturas datos de Recubiertos?</p>
+                        <p class="enc-sub">Si el cliente no maneja este producto, omítelo.</p>
+                        <div class="enc-btn-row">
+                            <button class="enc-btn-si" onclick="encSi('recubiertos',1)">Sí, capturar</button>
+                            <button class="enc-btn-no" onclick="encNo('recubiertos',2)">No aplica</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Campos ocultos para compatibilidad con cerrarVisita() -->
-            <input type="hidden" id="prob-cierre" value="" />
-            <input type="hidden" id="satisfaccion" value="" />
-            <input type="hidden" id="competencia" value="" />
-            <input type="hidden" id="productos-tratados" value="" />
-            <input type="hidden" id="proxima-accion" value="" />
-            <input type="hidden" id="fecha-compromiso" value="" />
-            <input type="hidden" id="disp-logistica" value="" />
-            <input type="hidden" id="disp-supply" value="" />
-            <input type="hidden" id="disp-creditos" value="" />
-            <input type="hidden" id="disp-direccion" value="" />
+                <!-- ── PASO 1: Formulario Recubiertos ── -->
+                <div class="enc-step" id="enc-s1">
+                    <div class="enc-form-card">
+                        <div class="enc-form-header">
+                            <span class="enc-badge">Recubiertos</span>
+                            <button class="enc-omitir" onclick="encNo('recubiertos',2)">✕ Omitir</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Potencial de compra (tons.)</label>
+                                <input type="number" class="prod-input-num" id="pot-recubiertos" min="0" max="9999" placeholder="0"/>
+                            </div>
+                            <div class="form-group">
+                                <label>¿Proveedor principal?</label>
+                                <select class="prod-select" id="prov-recubiertos" onchange="actualizarCheckboxLinea('recubiertos')">
+                                    <option value="">— selecciona —</option>
+                                    <option>Aliacer</option><option>GALVASID</option><option>Ternium</option><option>Villacero</option><option>Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="razones-sep">¿Por qué no nos compra?</div>
+                        <div class="razones-grid" id="razones-block-recubiertos">
+                            <div class="razon-item disabled" id="wrap-precio-recubiertos"><input type="checkbox" id="chk-precio-recubiertos"><label for="chk-precio-recubiertos">Precio</label></div>
+                            <div class="razon-item disabled" id="wrap-existencia-recubiertos"><input type="checkbox" id="chk-existencia-recubiertos"><label for="chk-existencia-recubiertos">Existencia</label></div>
+                            <div class="razon-item disabled" id="wrap-entrega-recubiertos"><input type="checkbox" id="chk-entrega-recubiertos"><label for="chk-entrega-recubiertos">Tiempo de Entrega</label></div>
+                            <div class="razon-item disabled" id="wrap-creditos-recubiertos"><input type="checkbox" id="chk-creditos-recubiertos"><label for="chk-creditos-recubiertos">Créditos</label></div>
+                            <div class="razon-item disabled" id="wrap-calidad-recubiertos"><input type="checkbox" id="chk-calidad-recubiertos"><label for="chk-calidad-recubiertos">Calidad</label></div>
+                            <div class="razon-item disabled" id="wrap-servicio-recubiertos"><input type="checkbox" id="chk-servicio-recubiertos"><label for="chk-servicio-recubiertos">Servicio</label></div>
+                        </div>
+                        <div class="form-group" style="margin-top:16px">
+                            <label>Conclusiones</label>
+                            <textarea id="conclusiones-recubiertos" class="prod-input-num" placeholder="¿Qué pasó con esta línea?" style="min-height:72px;resize:none"></textarea>
+                        </div>
+                        <button class="btn btn-danger" id="grabarBtn-recubiertos" onclick="grabarVozCampo('conclusiones-recubiertos','grabarBtn-recubiertos')" style="margin-top:6px">🎙 Grabar Voz</button>
+                    </div>
+                    <button class="enc-btn-sig" onclick="encSiguiente(2)">Siguiente →</button>
+                </div>
 
-            <div style="padding: 0 0 24px">
-                <button class="btn btn-primary" style="background:var(--success);width:100%;justify-content:center;font-size:1rem;padding:16px" onclick="cerrarVisita()">
-                    ✓ &nbsp;Cerrar Visita
-                </button>
-            </div>
+                <!-- ── PASO 2: Pregunta Perfiles ── -->
+                <div class="enc-step" id="enc-s2">
+                    <div class="enc-pregunta">
+                        <div class="enc-step-lbl">2 de 4 · Perfiles y Tubos</div>
+                        <p class="enc-titulo">¿Capturas datos de Perfiles y Tubos?</p>
+                        <p class="enc-sub">Si el cliente no maneja este producto, omítelo.</p>
+                        <div class="enc-btn-row">
+                            <button class="enc-btn-si" onclick="encSi('perfiles',3)">Sí, capturar</button>
+                            <button class="enc-btn-no" onclick="encNo('perfiles',4)">No aplica</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── PASO 3: Formulario Perfiles ── -->
+                <div class="enc-step" id="enc-s3">
+                    <div class="enc-form-card">
+                        <div class="enc-form-header">
+                            <span class="enc-badge">Perfiles y Tubos</span>
+                            <button class="enc-omitir" onclick="encNo('perfiles',4)">✕ Omitir</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Potencial de compra (tons.)</label>
+                                <input type="number" class="prod-input-num" id="pot-perfiles" min="0" max="9999" placeholder="0"/>
+                            </div>
+                            <div class="form-group">
+                                <label>¿Proveedor principal?</label>
+                                <select class="prod-select" id="prov-perfiles" onchange="actualizarCheckboxLinea('perfiles')">
+                                    <option value="">— selecciona —</option>
+                                    <option>Aliacer</option><option>Perfiles LM</option><option>Ternium</option><option>Villacero</option><option>Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="razones-sep">¿Por qué no nos compra?</div>
+                        <div class="razones-grid" id="razones-block-perfiles">
+                            <div class="razon-item disabled" id="wrap-precio-perfiles"><input type="checkbox" id="chk-precio-perfiles"><label for="chk-precio-perfiles">Precio</label></div>
+                            <div class="razon-item disabled" id="wrap-existencia-perfiles"><input type="checkbox" id="chk-existencia-perfiles"><label for="chk-existencia-perfiles">Existencia</label></div>
+                            <div class="razon-item disabled" id="wrap-entrega-perfiles"><input type="checkbox" id="chk-entrega-perfiles"><label for="chk-entrega-perfiles">Tiempo de Entrega</label></div>
+                            <div class="razon-item disabled" id="wrap-creditos-perfiles"><input type="checkbox" id="chk-creditos-perfiles"><label for="chk-creditos-perfiles">Créditos</label></div>
+                            <div class="razon-item disabled" id="wrap-calidad-perfiles"><input type="checkbox" id="chk-calidad-perfiles"><label for="chk-calidad-perfiles">Calidad</label></div>
+                            <div class="razon-item disabled" id="wrap-servicio-perfiles"><input type="checkbox" id="chk-servicio-perfiles"><label for="chk-servicio-perfiles">Servicio</label></div>
+                        </div>
+                        <div class="form-group" style="margin-top:16px">
+                            <label>Conclusiones</label>
+                            <textarea id="conclusiones-perfiles" class="prod-input-num" placeholder="¿Qué pasó con esta línea?" style="min-height:72px;resize:none"></textarea>
+                        </div>
+                        <button class="btn btn-danger" id="grabarBtn-perfiles" onclick="grabarVozCampo('conclusiones-perfiles','grabarBtn-perfiles')" style="margin-top:6px">🎙 Grabar Voz</button>
+                    </div>
+                    <button class="enc-btn-sig" onclick="encSiguiente(4)">Siguiente →</button>
+                </div>
+
+                <!-- ── PASO 4: Pregunta Lámina Negra ── -->
+                <div class="enc-step" id="enc-s4">
+                    <div class="enc-pregunta">
+                        <div class="enc-step-lbl">3 de 4 · Lámina Negra</div>
+                        <p class="enc-titulo">¿Capturas datos de Lámina Negra?</p>
+                        <p class="enc-sub">Si el cliente no maneja este producto, omítelo.</p>
+                        <div class="enc-btn-row">
+                            <button class="enc-btn-si" onclick="encSi('negra',5)">Sí, capturar</button>
+                            <button class="enc-btn-no" onclick="encNo('negra',6)">No aplica</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── PASO 5: Formulario Lámina Negra ── -->
+                <div class="enc-step" id="enc-s5">
+                    <div class="enc-form-card">
+                        <div class="enc-form-header">
+                            <span class="enc-badge">Lámina Negra</span>
+                            <button class="enc-omitir" onclick="encNo('negra',6)">✕ Omitir</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Potencial de compra (tons.)</label>
+                                <input type="number" class="prod-input-num" id="pot-negra" min="0" max="9999" placeholder="0"/>
+                            </div>
+                            <div class="form-group">
+                                <label>¿Proveedor principal?</label>
+                                <select class="prod-select" id="prov-negra" onchange="actualizarCheckboxLinea('negra')">
+                                    <option value="">— selecciona —</option>
+                                    <option>Aliacer</option><option>Ternium</option><option>Deacero</option><option>Villacero</option><option>Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="razones-sep">¿Por qué no nos compra?</div>
+                        <div class="razones-grid" id="razones-block-negra">
+                            <div class="razon-item disabled" id="wrap-precio-negra"><input type="checkbox" id="chk-precio-negra"><label for="chk-precio-negra">Precio</label></div>
+                            <div class="razon-item disabled" id="wrap-existencia-negra"><input type="checkbox" id="chk-existencia-negra"><label for="chk-existencia-negra">Existencia</label></div>
+                            <div class="razon-item disabled" id="wrap-entrega-negra"><input type="checkbox" id="chk-entrega-negra"><label for="chk-entrega-negra">Tiempo de Entrega</label></div>
+                            <div class="razon-item disabled" id="wrap-creditos-negra"><input type="checkbox" id="chk-creditos-negra"><label for="chk-creditos-negra">Créditos</label></div>
+                            <div class="razon-item disabled" id="wrap-calidad-negra"><input type="checkbox" id="chk-calidad-negra"><label for="chk-calidad-negra">Calidad</label></div>
+                            <div class="razon-item disabled" id="wrap-servicio-negra"><input type="checkbox" id="chk-servicio-negra"><label for="chk-servicio-negra">Servicio</label></div>
+                        </div>
+                        <div class="form-group" style="margin-top:16px">
+                            <label>Conclusiones</label>
+                            <textarea id="conclusiones-negra" class="prod-input-num" placeholder="¿Qué pasó con esta línea?" style="min-height:72px;resize:none"></textarea>
+                        </div>
+                        <button class="btn btn-danger" id="grabarBtn-negra" onclick="grabarVozCampo('conclusiones-negra','grabarBtn-negra')" style="margin-top:6px">🎙 Grabar Voz</button>
+                    </div>
+                    <button class="enc-btn-sig" onclick="encSiguiente(6)">Siguiente →</button>
+                </div>
+
+                <!-- ── PASO 6: Pregunta HSS ── -->
+                <div class="enc-step" id="enc-s6">
+                    <div class="enc-pregunta">
+                        <div class="enc-step-lbl">4 de 4 · HSS</div>
+                        <p class="enc-titulo">¿Capturas datos de HSS?</p>
+                        <p class="enc-sub">Si el cliente no maneja este producto, omítelo.</p>
+                        <div class="enc-btn-row">
+                            <button class="enc-btn-si" onclick="encSi('hss',7)">Sí, capturar</button>
+                            <button class="enc-btn-no" onclick="encNo('hss',8)">No aplica</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── PASO 7: Formulario HSS ── -->
+                <div class="enc-step" id="enc-s7">
+                    <div class="enc-form-card">
+                        <div class="enc-form-header">
+                            <span class="enc-badge">HSS</span>
+                            <button class="enc-omitir" onclick="encNo('hss',8)">✕ Omitir</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Potencial de compra (tons.)</label>
+                                <input type="number" class="prod-input-num" id="pot-hss" min="0" max="9999" placeholder="0"/>
+                            </div>
+                            <div class="form-group">
+                                <label>¿Proveedor principal?</label>
+                                <select class="prod-select" id="prov-hss" onchange="actualizarCheckboxLinea('hss')">
+                                    <option value="">— selecciona —</option>
+                                    <option>Aliacer</option><option>Aceros del Toro</option><option>Ternium</option><option>Villacero</option><option>Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="razones-sep">¿Por qué no nos compra?</div>
+                        <div class="razones-grid" id="razones-block-hss">
+                            <div class="razon-item disabled" id="wrap-precio-hss"><input type="checkbox" id="chk-precio-hss"><label for="chk-precio-hss">Precio</label></div>
+                            <div class="razon-item disabled" id="wrap-existencia-hss"><input type="checkbox" id="chk-existencia-hss"><label for="chk-existencia-hss">Existencia</label></div>
+                            <div class="razon-item disabled" id="wrap-entrega-hss"><input type="checkbox" id="chk-entrega-hss"><label for="chk-entrega-hss">Tiempo de Entrega</label></div>
+                            <div class="razon-item disabled" id="wrap-creditos-hss"><input type="checkbox" id="chk-creditos-hss"><label for="chk-creditos-hss">Créditos</label></div>
+                            <div class="razon-item disabled" id="wrap-calidad-hss"><input type="checkbox" id="chk-calidad-hss"><label for="chk-calidad-hss">Calidad</label></div>
+                            <div class="razon-item disabled" id="wrap-servicio-hss"><input type="checkbox" id="chk-servicio-hss"><label for="chk-servicio-hss">Servicio</label></div>
+                        </div>
+                        <div class="form-group" style="margin-top:16px">
+                            <label>Conclusiones</label>
+                            <textarea id="conclusiones-hss" class="prod-input-num" placeholder="¿Qué pasó con esta línea?" style="min-height:72px;resize:none"></textarea>
+                        </div>
+                        <button class="btn btn-danger" id="grabarBtn-hss" onclick="grabarVozCampo('conclusiones-hss','grabarBtn-hss')" style="margin-top:6px">🎙 Grabar Voz</button>
+                    </div>
+                    <button class="enc-btn-sig" onclick="encSiguiente(8)">Siguiente →</button>
+                </div>
+
+                <!-- ── PASO 8: Resumen + Cerrar ── -->
+                <div class="enc-step" id="enc-s8">
+                    <div class="card" style="margin-bottom:12px">
+                        <div class="section-title" style="font-size:0.88rem;margin-bottom:12px">Resumen de la visita</div>
+                        <div id="enc-resumen"></div>
+                    </div>
+                    <button class="btn btn-primary" style="background:var(--success);width:100%;justify-content:center;font-size:1rem;padding:16px" onclick="cerrarVisita()">
+                        ✓ &nbsp;Cerrar Visita
+                    </button>
+                </div>
+
+            </div><!-- /enc-wrapper -->
+
+            <!-- Campos ocultos compatibilidad -->
+            <input type="hidden" id="resultado" value=""/>
+            <textarea id="conclusiones" style="display:none"></textarea>
+            <input type="hidden" id="prob-cierre" value=""/>
+            <input type="hidden" id="satisfaccion" value=""/>
+            <input type="hidden" id="competencia" value=""/>
+            <input type="hidden" id="productos-tratados" value=""/>
+            <input type="hidden" id="proxima-accion" value=""/>
+            <input type="hidden" id="fecha-compromiso" value=""/>
+            <input type="hidden" id="disp-logistica" value=""/>
+            <input type="hidden" id="disp-supply" value=""/>
+            <input type="hidden" id="disp-creditos" value=""/>
+            <input type="hidden" id="disp-direccion" value=""/>
         </div>
+
 
         <!-- TAB: CONSULTAS -->
         <div id="tab-consultas" class="section">
             <div class="section-title">Consultar Datos</div>
-
             <div class="query-btns">
                 <button class="btn btn-secondary" id="consultarVisitasBtn" onclick="consultarVisitas()">📋 Visitas Registradas</button>
                 <button class="btn btn-secondary" id="consultarVendedoresBtn" onclick="consultarVendedores()">👤 Vendedores</button>
                 <button class="btn btn-secondary" id="vendedoresClientesBtn" onclick="consultarVendedoresClientes()">🔗 Vendedores – Clientes</button>
             </div>
-
             <div id="resultado-consulta"></div>
         </div>
 
@@ -1952,14 +2095,138 @@
 
         // ── HELPERS FORMULARIO CERRAR ────────────────────────────────
 
-        // Todos los checkboxes de cada línea (ahora es la misma lista para todas)
-        const RAZONES = ['precio', 'existencia', 'entrega', 'creditos'];
+        // Líneas de producto y razones de no compra
         const LINEAS  = ['negra', 'recubiertos', 'perfiles', 'hss'];
+        const RAZONES = ['precio','existencia','entrega','creditos','calidad','servicio'];
+
+        // ── ENCUESTA POR LÍNEA ───────────────────────────────────────
+        const ENC_PILL = { recubiertos:'ep-recubiertos', perfiles:'ep-perfiles', negra:'ep-negra', hss:'ep-hss' };
+        const ENC_PCT  = { 0:0, 1:25, 2:25, 3:50, 4:50, 5:75, 6:75, 7:100, 8:100 };
+
+        function encIrA(n) {
+            document.querySelectorAll('.enc-step').forEach(s => s.classList.remove('activo'));
+            const el = document.getElementById('enc-s' + n);
+            if (el) el.classList.add('activo');
+            document.getElementById('enc-pbar').style.width = (ENC_PCT[n] || 0) + '%';
+            if (n === 8) encMostrarResumen();
+        }
+
+        function encSi(linea, siguientePaso) {
+            const pill = document.getElementById(ENC_PILL[linea]);
+            if (pill) { pill.className = 'enc-pill activa'; }
+            actualizarCheckboxLinea(linea);
+            encIrA(siguientePaso);
+        }
+
+        function encNo(linea, siguientePaso) {
+            const pill = document.getElementById(ENC_PILL[linea]);
+            if (pill) pill.className = 'enc-pill omitida';
+            // limpiar campos de la línea omitida
+            const pot = document.getElementById('pot-' + linea);
+            const prov = document.getElementById('prov-' + linea);
+            if (pot) pot.value = '';
+            if (prov) { prov.value = ''; actualizarCheckboxLinea(linea); }
+            RAZONES.forEach(r => { const c = document.getElementById('chk-' + r + '-' + linea); if(c) { c.checked = false; } });
+            const conc = document.getElementById('conclusiones-' + linea);
+            if (conc) conc.value = '';
+            encIrA(siguientePaso);
+        }
+
+        function encSiguiente(n) {
+            // marcar la línea anterior como lista (pastilla verde)
+            const pillaAnterior = { 2:'ep-recubiertos', 4:'ep-perfiles', 6:'ep-negra', 8:'ep-hss' };
+            if (pillaAnterior[n]) {
+                const p = document.getElementById(pillaAnterior[n]);
+                if (p && p.classList.contains('activa')) p.className = 'enc-pill lista';
+            }
+            encIrA(n);
+        }
+
+        function encMostrarResumen() {
+            const nombres = { recubiertos:'Recubiertos', perfiles:'Perfiles y Tubos', negra:'Lámina Negra', hss:'HSS' };
+            const nuestros = ['Aliacer','GALVASID','Perfiles LM'];
+            const razonesLabel = { precio:'Precio', existencia:'Existencia', entrega:'Tiempo de Entrega', creditos:'Créditos', calidad:'Calidad', servicio:'Servicio' };
+
+            let html = '';
+            ['recubiertos','perfiles','negra','hss'].forEach(l => {
+                const pill    = document.getElementById('ep-' + l);
+                const omitida = pill && pill.classList.contains('omitida');
+                const nombre  = nombres[l];
+
+                if (omitida) {
+                    html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                            <span style="font-weight:700;font-size:0.88rem;color:var(--text-muted)">${nombre}</span>
+                            <span style="font-size:0.78rem;color:var(--text-dim);background:var(--surface2);padding:2px 10px;border-radius:20px;border:1px solid var(--border)">No aplica</span>
+                        </div>
+                    </div>`;
+                } else {
+                    const pot  = document.getElementById('pot-' + l)?.value || '0';
+                    const prov = document.getElementById('prov-' + l)?.value || '—';
+                    const conc = document.getElementById('conclusiones-' + l)?.value.trim() || '';
+                    const esNuestro = nuestros.includes(prov);
+
+                    const razonesMarcadas = ['precio','existencia','entrega','creditos','calidad','servicio']
+                        .filter(r => document.getElementById('chk-' + r + '-' + l)?.checked)
+                        .map(r => razonesLabel[r]);
+
+                    const razonesHtml = esNuestro
+                        ? `<div style="margin-top:8px">
+                               <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px">Razones de no compra</div>
+                               <span style="font-size:0.8rem;color:var(--text-muted)">Somos proveedor principal</span>
+                           </div>`
+                        : razonesMarcadas.length
+                            ? `<div style="margin-top:8px">
+                                   <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Razones de no compra</div>
+                                   <div style="display:flex;flex-wrap:wrap;gap:4px">${razonesMarcadas.map(r=>`<span style="font-size:0.72rem;padding:2px 9px;border-radius:20px;background:#fdecea;color:#a32d2d;border:1px solid #f09595">${r}</span>`).join('')}</div>
+                               </div>`
+                            : '';
+
+                    const concHtml = conc
+                        ? `<div style="margin-top:8px">
+                               <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px">Conclusiones</div>
+                               <div style="font-size:0.82rem;color:var(--text);font-style:italic">"${conc}"</div>
+                           </div>`
+                        : '';
+
+                    html += `<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+                        <div style="font-weight:700;font-size:0.9rem;color:var(--text);margin-bottom:8px">${nombre}</div>
+                        <div style="display:flex;gap:24px;flex-wrap:wrap">
+                            <div>
+                                <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">Potencial</div>
+                                <div style="font-size:0.88rem;font-weight:600;color:var(--text)">${pot} tons.</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">Proveedor principal</div>
+                                <div style="font-size:0.88rem;color:var(--accent);font-weight:600">${prov}</div>
+                            </div>
+                        </div>
+                        ${razonesHtml}${concHtml}
+                    </div>`;
+                }
+            });
+
+            document.getElementById('enc-resumen').innerHTML = html;
+        }
+
+        function encReset() {
+            encIrA(0);
+            ['recubiertos','perfiles','negra','hss'].forEach((l,i) => {
+                const names = ['ep-recubiertos','ep-perfiles','ep-negra','ep-hss'];
+                const p = document.getElementById(names[i]);
+                if (p) p.className = 'enc-pill' + (i===0?' activa':'');
+            });
+            document.getElementById('ep-fin').className = 'enc-pill';
+            document.getElementById('enc-pbar').style.width = '0%';
+        }
 
         function actualizarCheckboxLinea(linea) {
             const prov = document.getElementById('prov-' + linea)?.value || '';
-            // Desactivar si es Aliacer (somos nosotros) O si no se ha seleccionado proveedor
-            const desactivar = prov === 'Aliacer' || prov === '';
+            const block = document.getElementById('razones-block-' + linea);
+            // El bloque de razones siempre visible dentro del formulario abierto
+            if (block) block.style.display = 'block';
+            // Deshabilitar checkboxes si somos nosotros (Aliacer/GALVASID/Perfiles LM) o no hay proveedor
+            const desactivar = prov === '' || prov === 'Aliacer' || prov === 'GALVASID' || prov === 'Perfiles LM';
             RAZONES.forEach(razon => {
                 const chk  = document.getElementById('chk-' + razon + '-' + linea);
                 const wrap = document.getElementById('wrap-' + razon + '-' + linea);
@@ -1981,6 +2248,8 @@
                 const prov = document.getElementById('prov-' + linea);
                 if (pot)  pot.value = '';
                 if (prov) { prov.value = ''; actualizarCheckboxLinea(linea); }
+                const conc = document.getElementById('conclusiones-' + linea);
+                if (conc) conc.value = '';
             });
             RAZONES.forEach(razon => {
                 LINEAS.forEach(linea => {
@@ -1989,16 +2258,23 @@
                 });
             });
             document.getElementById('conclusiones').value = '';
+            encReset();
         }
 
         // ── CERRAR VISITA ────────────────────────────────────────────
         async function cerrarVisita() {
             const visitaId     = document.getElementById('cerrar-visita').value;
-            const conclusiones = document.getElementById('conclusiones').value.trim();
+            // Construir conclusiones a partir de las conclusiones por línea
+            const nombresLinea = { negra:'Lámina Negra', recubiertos:'Recubiertos', perfiles:'Perfiles y Tubos', hss:'HSS' };
+            const concPartes = [];
+            ['negra','recubiertos','perfiles','hss'].forEach(linea => {
+                const c = document.getElementById('conclusiones-' + linea)?.value.trim();
+                if (c) concPartes.push('[' + nombresLinea[linea] + '] ' + c);
+            });
+            const conclusiones = concPartes.join(' | ');
 
             // ── Leer tabla de productos ──────────────────────────────
             const lineas = ['negra','recubiertos','perfiles','hss'];
-            const nombresLinea = { negra:'Lámina Negra', recubiertos:'Recubiertos', perfiles:'Perfiles y Tubos', hss:'HSS' };
             const tablaProductos = {};
             const productosArr = [];
 
@@ -2008,7 +2284,8 @@
                 // Si no se seleccionó proveedor, guardar "N/A"
                 const provGuardar = prov === '' ? 'N/A' : prov;
                 if (pot > 0 || prov) productosArr.push(nombresLinea[linea]);
-                tablaProductos[linea] = { potencial: pot, proveedor: provGuardar };
+                const concLinea = document.getElementById('conclusiones-' + linea)?.value.trim() || '';
+                tablaProductos[linea] = { potencial: pot, proveedor: provGuardar, conclusiones: concLinea };
             });
             tablaProductos.razones = {};
             RAZONES.forEach(razon => {
@@ -2024,14 +2301,10 @@
                 alert('Selecciona la visita que deseas cerrar.');
                 return;
             }
-            if (!conclusiones) {
-                alert('Escribe o graba las conclusiones de la visita.');
-                return;
-            }
 
-            const cerrarBtn = document.querySelector('button[onclick="cerrarVisita()"]');
-            cerrarBtn.textContent = '⏳ Cerrando...';
-            cerrarBtn.disabled = true;
+            const cerrarBtn = document.querySelector('#enc-s8 button[onclick="cerrarVisita()"]') ||
+                              document.querySelector('button[onclick="cerrarVisita()"]');
+            if (cerrarBtn) { cerrarBtn.textContent = '⏳ Cerrando...'; cerrarBtn.disabled = true; }
 
             const _d = new Date();
             const horaFin = _d.getFullYear() + '-' +
@@ -2055,6 +2328,20 @@
             } catch(e) { /* si falla, se guarda sin duración */ }
 
             try {
+                // Construir objeto con columnas individuales por línea
+                const colsLinea = {};
+                ['negra','recubiertos','perfiles','hss'].forEach(l => {
+                    colsLinea['pot_'  + l] = tablaProductos[l]?.potencial  || 0;
+                    colsLinea['prov_' + l] = tablaProductos[l]?.proveedor  || null;
+                    colsLinea['conclusiones_' + l] = tablaProductos[l]?.conclusiones || null;
+                });
+                ['precio','existencia','entrega','creditos','calidad','servicio'].forEach(r => {
+                    ['negra','recubiertos','perfiles','hss'].forEach(l => {
+                        colsLinea['razon_' + r + '_' + l] =
+                            tablaProductos.razones?.[r + '_' + l] || false;
+                    });
+                });
+
                 const updated = await sbFetch('visitas?id=eq.' + visitaId, {
                     method: 'PATCH',
                     body: JSON.stringify({
@@ -2072,6 +2359,7 @@
                         proxima_accion: null,
                         fecha_compromiso: null,
                         disparadores: null,
+                        ...colsLinea,
                         ...(duracion && { duracion })
                     })
                 });
@@ -2103,8 +2391,7 @@
             } catch(e) {
                 showToast('Error al cerrar visita: ' + e.message, true);
             } finally {
-                cerrarBtn.innerHTML = '✓ &nbsp;Cerrar Visita';
-                cerrarBtn.disabled = false;
+                if (cerrarBtn) { cerrarBtn.innerHTML = '✓ &nbsp;Cerrar Visita'; cerrarBtn.disabled = false; }
             }
         }
 
@@ -2902,7 +3189,7 @@
             await cargarSelects();
             await actualizarKPI();
 
-            // Inicializar checkboxes de la tabla: desactivados hasta que se elija proveedor
+            // Inicializar checkboxes de las líneas: desactivados hasta que se elija proveedor
             LINEAS.forEach(linea => actualizarCheckboxLinea(linea));
         };
     </script>
