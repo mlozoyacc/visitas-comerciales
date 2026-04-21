@@ -1003,7 +1003,12 @@
 
         <!-- TAB: CERRAR VISITA -->
         <div id="tab-cerrar" class="section">
-            <div class="section-title">Cerrar Visita</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <div class="section-title" style="margin-bottom:0">Cerrar Visita</div>
+                <button onclick="limpiarFormularioCerrar()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Sora',sans-serif;font-size:0.75rem;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:5px" title="Limpiar lo capturado y empezar de nuevo">
+                    ↺ Limpiar captura
+                </button>
+            </div>
 
             <div class="card">
                 <div class="form-grid">
@@ -2020,11 +2025,26 @@
                 document.getElementById('cliente').style.display = 'block';
                 document.getElementById('cliente-prospecto').value = '';
                 document.getElementById('cliente-prospecto').style.display = 'none';
-                document.getElementById('es-prospecto').checked = false;
                 document.getElementById('ubicacion').value = '';
                 document.getElementById('hora-visita').value = '';
                 document.getElementById('visita-lat').value = '';
                 document.getElementById('visita-lon').value = '';
+
+                // Restaurar estado del checkbox según el modo de sesión
+                const chk = document.getElementById('es-prospecto');
+                if (chk) {
+                    if (vendedorSesion && vendedorSesion.modo === 'libre') {
+                        // Modo Gerente/Supervisor: siempre vuelve a prospecto marcado
+                        chk.checked = true;
+                        chk.disabled = true;
+                        toggleProspecto();
+                    } else {
+                        // Modo vendedor normal: checkbox libre y desmarcado
+                        chk.checked = false;
+                        chk.disabled = false;
+                        toggleProspecto();
+                    }
+                }
 
 
             } catch(e) {
@@ -2107,8 +2127,9 @@
             document.querySelectorAll('.enc-step').forEach(s => s.classList.remove('activo'));
             const el = document.getElementById('enc-s' + n);
             if (el) el.classList.add('activo');
-            document.getElementById('enc-pbar').style.width = (ENC_PCT[n] || 0) + '%';
-            if (n === 8) encMostrarResumen();
+            const pbar = document.getElementById('enc-pbar');
+            if (pbar) pbar.style.width = (ENC_PCT[n] || 0) + '%';
+            if (n === 8) { try { encMostrarResumen(); } catch(e) { console.warn('encMostrarResumen:', e); } }
         }
 
         function encSi(linea, siguientePaso) {
@@ -2133,7 +2154,6 @@
         }
 
         function encSiguiente(n) {
-            // marcar la línea anterior como lista (pastilla verde)
             const pillaAnterior = { 2:'ep-recubiertos', 4:'ep-perfiles', 6:'ep-negra', 8:'ep-hss' };
             if (pillaAnterior[n]) {
                 const p = document.getElementById(pillaAnterior[n]);
@@ -2210,14 +2230,24 @@
         }
 
         function encReset() {
-            encIrA(0);
-            ['recubiertos','perfiles','negra','hss'].forEach((l,i) => {
-                const names = ['ep-recubiertos','ep-perfiles','ep-negra','ep-hss'];
-                const p = document.getElementById(names[i]);
-                if (p) p.className = 'enc-pill' + (i===0?' activa':'');
-            });
-            document.getElementById('ep-fin').className = 'enc-pill';
-            document.getElementById('enc-pbar').style.width = '0%';
+            try {
+                const pillData = [
+                    { id:'ep-recubiertos', cls:'enc-pill activa' },
+                    { id:'ep-perfiles',    cls:'enc-pill' },
+                    { id:'ep-negra',       cls:'enc-pill' },
+                    { id:'ep-hss',         cls:'enc-pill' }
+                ];
+                pillData.forEach(p => {
+                    const el = document.getElementById(p.id);
+                    if (el) el.className = p.cls;
+                });
+                const pbar = document.getElementById('enc-pbar');
+                if (pbar) pbar.style.width = '0%';
+                // Resetear pasos: solo mostrar paso 0
+                document.querySelectorAll('.enc-step').forEach(s => s.classList.remove('activo'));
+                const s0 = document.getElementById('enc-s0');
+                if (s0) s0.classList.add('activo');
+            } catch(e) { console.warn('encReset error:', e); }
         }
 
         function actualizarCheckboxLinea(linea) {
